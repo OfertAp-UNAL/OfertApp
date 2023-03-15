@@ -1,0 +1,9 @@
+If you are getting problems while trying to run pip install mysqlclient
+Please try downloading its .whl file and manually installing by using:
+	pip install <filename>.whl
+
+Download site:
+	https://www.lfd.uci.edu/~gohlke/pythonlibs/#mysqlclient
+
+Choose cpxx-cpxx
+where xx stands for your Python version (i.e. 3.7)
