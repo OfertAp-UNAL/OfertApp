@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 import environ
 import os
+from datetime import timedelta
 
 import pymysql
 pymysql.install_as_MySQLdb()
@@ -40,7 +41,7 @@ DEBUG = env("DEBUG", default=False, cast=bool)
 APPEND_SLASH = False
 
 ALLOWED_HOSTS = [
-    "localhost",
+    "localhost"
 ]
 
 # Application definition
@@ -52,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.auth.hashers',
     'auth.apps.AuthConfig',
     'publications.apps.PublicationsConfig',
     "rest_framework",
@@ -67,7 +69,32 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware'
+]
+
+# Overwrite rest_framework default settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+# Overwrite JWT default settings
+SIMPLE_JWT = {
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    #"TOKEN_OBTAIN_SERIALIZER": "auth.token.serializers.CustomTokenPairSerializer",
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
+    "ALGORITHM": "HS256",
+}
+
+# Overwritting auth backends
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'auth.backends.CustomBackend'
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -90,7 +117,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'OfertAppp.wsgi.application'
+WSGI_APPLICATION = 'OfertApp.wsgi.application'
 
 
 # Database
@@ -107,6 +134,8 @@ DATABASES = {
     }
 }
 
+# Overwrite default user auth model
+AUTH_USER_MODEL = 'users_auth.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -124,6 +153,15 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+]
+
+# Password hashers
+# https://docs.djangoproject.com/en/3.2/topics/auth/passwords/#using-bcrypt-with-django
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.BCryptPasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
 ]
 
 
