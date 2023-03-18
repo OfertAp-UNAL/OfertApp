@@ -17,8 +17,10 @@ from django.contrib import admin
 from django.urls import path
 from django.urls.conf import include
 import auth.urls as authUrls
+import publications.urls as publicationsUrls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/auth/', include( authUrls) ),
+    path('api/v1/', include( publicationsUrls)),
 ]
