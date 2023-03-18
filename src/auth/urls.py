@@ -16,9 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from .views import LoginView, RegisterView
-from .token.views import CustomTokenObtainPairView
+from .token.views import CustomTokenObtainPairView, CustomTokenRefreshView
 
 urlpatterns = [
     path('login/', LoginView.as_view()),
     path('register/', RegisterView.as_view()),
+    path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
 ]

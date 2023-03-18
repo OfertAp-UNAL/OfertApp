@@ -82,7 +82,7 @@ REST_FRAMEWORK = {
 # Overwrite JWT default settings
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
-    #"TOKEN_OBTAIN_SERIALIZER": "auth.token.serializers.CustomTokenPairSerializer",
+    "TOKEN_OBTAIN_SERIALIZER": "auth.token.serializers.CustomTokenPairSerializer",
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": True,
@@ -164,6 +164,14 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
 ]
 
+
+# Smtp config
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_PORT = env("EMAIL_PORT")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = True
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

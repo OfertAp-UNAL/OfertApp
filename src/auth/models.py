@@ -19,10 +19,12 @@ class User (AbstractUser):
     townId = models.FloatField( null=False )
     profilePicture = models.ImageField(upload_to='profile_pictures', blank=True, null=True)
     blocked = models.BooleanField(default=False, null=False)
+    verified = models.BooleanField(default=False, null=False)
 
     class AccountType (models.TextChoices):
         PAYPAL = ('PP',"PayPal")
         EFECTY = ('EF',"Efecty")
+        NEQUI = ('NQ',"Nequi")
         CREDIT_CARD = ('CD',"Credit Card")
     
     accountType = models.CharField(

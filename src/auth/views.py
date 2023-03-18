@@ -2,7 +2,6 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
 from auth.serializers import UserSerializer
 from auth.token.serializers import CustomTokenPairSerializer
 
@@ -14,21 +13,31 @@ class LoginView( APIView ):
             "password" : request.data.get("password")
         }
 
-        user = authenticate(
-            request,
-            username=data["username"],
-            email=data["email"],
-            password=data["password"]
-        )
+        try:
+            user = authenticate(
+                request,
+                username=data["username"],
+                email=data["email"],
+                password=data["password"]
+            )
+        except Exception as e:
+            print(e)
+            return Response({
+                "status" : "error",
+                "error" : "Invalid credentials"
+            })
+        
 
         if user is not None:
             refresh = CustomTokenPairSerializer.get_token(user)
 
             return Response({
+                "status" : "success",
                 "token" : str(refresh.access_token),
             })
 
         return Response({
+            "status" : "error",
             "error" : "Invalid credentials"
         })
 
@@ -63,8 +72,16 @@ class RegisterView( APIView ):
                 refresh = CustomTokenPairSerializer.get_token(user)
 
                 return Response({
+                    "status" : "success",
                     "token" : str(refresh.access_token),
                 })
-            return Response(serializer.data)
+            
+            return Response({
+                "status" : "error",
+                "error" : "Invalid form body"
+            })
         
-        return Response(serializer.errors)
+        return Response({
+            "status" : "error",
+            "errors" : serializer.errors
+        })
