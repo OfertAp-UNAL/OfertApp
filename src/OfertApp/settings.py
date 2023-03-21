@@ -40,6 +40,9 @@ DEBUG = env("DEBUG", default=False, cast=bool)
 # Allow requests which doesn't end with /
 APPEND_SLASH = False
 
+# Get Backend's domain name:
+WEB_URL = env("WEB_URL")
+
 ALLOWED_HOSTS = [
     "localhost"
 ]
@@ -172,6 +175,15 @@ EMAIL_PORT = env("EMAIL_PORT")
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
+
+# MasterCard data
+MC_API_BASE_URL= env("MC_API_BASE_URL")
+MC_PRIVATE_KEY_PATH = env("MC_PRIVATE_KEY_PATH")
+MC_CARD_KEY_PASSWORD = env("MC_CARD_KEY_PASSWORD")
+MC_CONSUMER_KEY = env("MC_CONSUMER_KEY")
+
+# Get verification endpoint
+EMAIL_VERIFICATION_URL_ENDPOINT = env("EMAIL_VERIFICATION_URL_ENDPOINT")
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

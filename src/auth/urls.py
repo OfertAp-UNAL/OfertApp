@@ -15,12 +15,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import LoginView, RegisterView
+from .views import LoginView, RegisterView, VerifyView, UserInfoView
 from .token.views import CustomTokenObtainPairView, CustomTokenRefreshView
+from django.conf import settings
 
 urlpatterns = [
-    path('login/', LoginView.as_view()),
-    path('register/', RegisterView.as_view()),
-    path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
+    path('auth/login/', LoginView.as_view()),
+    path('auth/register/', RegisterView.as_view()),
+
+    # Path for verifying emails, users (or frontend must call this endpoint)
+    path(f'auth/{settings.EMAIL_VERIFICATION_URL_ENDPOINT}/<str:token>/<str:user64_id>/', 
+        VerifyView.as_view(), name='verify_email'),
+    
+    # Tokens refresh must be done by logging in again
+
+    # Get and update userinfo
+    path('userinfo/', UserInfoView.as_view(), name='user_info')
 ]

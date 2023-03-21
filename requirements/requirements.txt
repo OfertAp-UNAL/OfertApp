@@ -10,3 +10,4 @@ pymysql==1.0.2
 djangorestframework-simplejwt==5.2.2
 pillow==9.4.0
 bcrypt==4.0.1
+mastercard-oauth1-signer==1.6.1
