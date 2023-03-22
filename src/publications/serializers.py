@@ -6,4 +6,10 @@ class PublicationSerializer(serializers.ModelSerializer):
         model = Publication
         fields = (
             'title', 'description', 'minOffer', 'endDate', 'available', 'reportable', 'category',
-            'user',)
+            'user', 'id')
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = (
+            'name', 'id')
