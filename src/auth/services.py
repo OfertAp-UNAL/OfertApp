@@ -24,7 +24,6 @@ class AccountCheckService():
         self.mastercard_keys = None
     
     def checkAccount(self, userData): 
-        return True
         if userData["accountType"] == 'PP':
             return self.checkPaypalAccount(userData)
         elif userData["accountType"] == 'NQ':
@@ -201,8 +200,13 @@ class AccountCheckService():
         from_email = settings.EMAIL_HOST_USER
         to = user.email
         text_content = f'''
-            Bienvenido a OfertApp, para verificar tu cuenta haz click en el siguiente enlace:
-            {settings.WEB_URL}/api/v1/auth/{settings.EMAIL_VERIFICATION_URL_ENDPOINT}/{token}/{user_id}/
+            <h1 style="color:#00BF63">Bienvenido a OfertApp</h1>
+            <p>Para verificar tu cuenta haz click en el siguiente enlace
+            <a href="{settings.WEB_URL}/api/v1/auth/{settings.EMAIL_VERIFICATION_URL_ENDPOINT}/{token}/{user_id}/">
+                Verificar cuenta!
+            </a></p>
+
+            No contestes a este mensaje (y perdon por el spam :D)
         '''
 
         try:
@@ -213,6 +217,7 @@ class AccountCheckService():
                 from_email,
                 [to]
             )
+            email.content_subtype = "html"
 
             email.send()
 

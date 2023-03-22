@@ -15,10 +15,8 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
 class AdminSerializer(serializers.ModelSerializer):
+
+    user = UserSerializer()
     class Meta:
         model = Admin
-        fields = (
-            'id', 'email', 'username', 'birthdate', 'phone', 'address', 'townId', 'password',
-            'profilePicture', 'blocked', 'accountType', 'accountId', 'vipState', 'vipPubCount',
-            'firstName', 'lastName', 'idenIdType', 'createdAt', 'verified', 'hiredDate'
-            )
+        fields = '__all__'

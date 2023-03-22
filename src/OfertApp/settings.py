@@ -59,6 +59,10 @@ INSTALLED_APPS = [
     'django.contrib.auth.hashers',
     'auth.apps.AuthConfig',
     'publications.apps.PublicationsConfig',
+    'reports.apps.ReportsConfig',
+    'comments.apps.CommentsConfig',
+    'admins.apps.AdminsConfig',
+    'core.apps.CoreConfig',
     "rest_framework",
     "corsheaders",
     "django_seed"

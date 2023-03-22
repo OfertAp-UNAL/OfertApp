@@ -103,6 +103,10 @@ class User (AbstractUser):
         default=0, null=False,
         db_column="usrVipPubCount"
     )
+    reputation = models.FloatField(
+        default=1.0, null=False,
+        db_column="usrReputation"
+    )
 
 class Admin( models.Model ):
 
