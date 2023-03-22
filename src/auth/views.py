@@ -90,7 +90,8 @@ class RegisterView( APIView ):
 
 
         # Get profile picture from files array
-        data["profilePicture"] = request.FILES["profilePicture"]
+        if "profilePicture" in request.FILES:
+            data["profilePicture"] = request.FILES["profilePicture"]
 
         # Hash password
         data["password"] = make_password(data["password"])
