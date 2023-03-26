@@ -43,7 +43,8 @@ class Command(BaseCommand):
                 accountId = i,
                 townId = fake.random_element(elements=(
                     1.2, 2.3, 3.4, 4.1, 5.4, 6.2, 7.7, 8.99, 9.10, 10.21
-                ))
+                )),
+                verified = True
             )
             for i in usersIds
         ]

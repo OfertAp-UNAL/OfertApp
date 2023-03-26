@@ -14,17 +14,18 @@ permissionsService = PermissionsCheckService()
 
 class LoginView( APIView ):
     def post(self, request):
+
+        # Allows verification with any of both username or email
         data = {
-            "email" : request.data.get("email"),
-            "username" : request.data.get("username"),
+            "user" : request.data.get("user"),
             "password" : request.data.get("password")
         }
 
         try:
             user = authenticate(
                 request,
-                username=data["username"],
-                email=data["email"],
+                email=data["user"],
+                user=data["user"],
                 password=data["password"]
             )
         except Exception as e:
@@ -58,7 +59,7 @@ class LoginView( APIView ):
 
             else:
                 # Force the user to verify his Email
-                accountService.sendVerificationEmail(user)
+                #accountService.sendVerificationEmail(user)
 
                 return Response({
                     "status" : "error",
@@ -70,6 +71,20 @@ class LoginView( APIView ):
             "error" : "Invalid credentials"
         })
 
+class LogoutView( APIView ):
+    def get( self, request ):
+        if request.user.is_authenticated:
+            request.user.auth_token.delete()
+
+            return Response({
+                "status" : "success"
+            })
+        
+        return Response({
+            "status" : "error",
+            "error" : "You are not logged in"
+        })
+    
 class RegisterView( APIView ):
     def post( self, request ):
         data = {
@@ -110,7 +125,7 @@ class RegisterView( APIView ):
             user = serializer.save()
             if user:
                 # Force the user to verify his Email
-                accountService.sendVerificationEmail(user)
+                #accountService.sendVerificationEmail(user)
 
                 # Give this user a token, but next time he will have to verify his account
                 refresh = CustomTokenPairSerializer.get_token(user)

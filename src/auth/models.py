@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+import numpy as np
 
 class User (AbstractUser):
 
@@ -105,8 +106,21 @@ class User (AbstractUser):
     )
     reputation = models.FloatField(
         default=1.0, null=False,
-        db_column="usrReputation"
+        db_column="usrReputation",
     )
+
+    def updateReputation( self ):
+        reports_count = np.sum( [
+            publication.reports.count() for publication in self.publications.all()
+        ])
+        
+        if reports_count > 0:
+            # Reputation score, using a sigmoid function
+            self.reputation = (-1) * (1 / (1 + np.exp( (reports_count - 7) / 3))) + 1
+        else:
+            self.reputation = 1.0
+
+        self.save()
 
 class Admin( models.Model ):
 

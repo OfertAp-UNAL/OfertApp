@@ -2,7 +2,6 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
 from publications.serializers import PublicationSerializer, CategorySerializer
 from publications.models import Publication, Category
 

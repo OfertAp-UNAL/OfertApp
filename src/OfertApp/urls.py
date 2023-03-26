@@ -18,9 +18,13 @@ from django.urls import path
 from django.urls.conf import include
 import auth.urls as authUrls
 import publications.urls as publicationsUrls
+import comments.urls as commentsUrls
+
+apiUrl = 'api/v1/'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/', include( authUrls) ),
-    path('api/v1/', include( publicationsUrls)),
+    path(apiUrl, include( authUrls) ),
+    path(apiUrl, include( publicationsUrls)),
+    path(apiUrl, include( commentsUrls)),
 ]

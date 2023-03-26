@@ -15,12 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import LoginView, RegisterView, VerifyView, UserInfoView
-from .token.views import CustomTokenObtainPairView, CustomTokenRefreshView
+from .views import LoginView, RegisterView, VerifyView, UserInfoView, LogoutView
 from django.conf import settings
 
 urlpatterns = [
     path('auth/login/', LoginView.as_view()),
+    path('auth/logout/', LogoutView.as_view(), name='logout'),
     path('auth/register/', RegisterView.as_view()),
 
     # Path for verifying emails, users (or frontend must call this endpoint)
