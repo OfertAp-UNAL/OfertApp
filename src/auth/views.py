@@ -110,6 +110,7 @@ class RegisterView( APIView ):
 
         # Hash password
         data["password"] = make_password(data["password"])
+        data["verified"] = True
 
         serializer = UserSerializer(data=data)
 
