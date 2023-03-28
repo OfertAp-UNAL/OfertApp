@@ -171,6 +171,9 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
 ]
 
+# Config media urls
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Smtp config
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
