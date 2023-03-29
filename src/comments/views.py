@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Comment
-from .serializers import CommentSerializer, ReactionSerializer
+from .serializers import PublicationCommentSerializer, CommentSerializer, ReactionSerializer
 from publications.models import Publication
 
 class CommentView( APIView ):
@@ -22,7 +22,7 @@ class CommentView( APIView ):
 
                 return Response({
                     "status" : "success",
-                    "data" : CommentSerializer(comment).data
+                    "data" : PublicationCommentSerializer(comment).data
                 })
             except Comment.DoesNotExist:
                 return Response({
@@ -34,7 +34,7 @@ class CommentView( APIView ):
         comments = publication.comments.all()
         return Response({
             "status" : "success",
-            "data" : CommentSerializer(comments, many=True).data
+            "data" : PublicationCommentSerializer(comments, many=True).data
         })
         
     def post(self, request, publicationId, commentId = None ):

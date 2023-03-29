@@ -126,7 +126,7 @@ class RegisterView( APIView ):
             user = serializer.save()
             if user:
                 # Force the user to verify his Email
-                #accountService.sendVerificationEmail(user)
+                # accountService.sendVerificationEmail(user)
                 
                 # Give this user a token, but next time he will have to verify his account
                 refresh = CustomTokenPairSerializer.get_token(user)

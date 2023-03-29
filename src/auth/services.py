@@ -202,7 +202,7 @@ class AccountCheckService():
         text_content = f'''
             <h1 style="color:#00BF63">Bienvenido a OfertApp</h1>
             <p>Para verificar tu cuenta haz click en el siguiente enlace
-            <a href="{settings.WEB_URL}/api/v1/auth/{settings.EMAIL_VERIFICATION_URL_ENDPOINT}/{token}/{user_id}/">
+            <a href="{settings.WEB_URL}{settings.EMAIL_VERIFICATION_URL_ENDPOINT}/{token}/{user_id}/">
                 Verificar cuenta!
             </a></p>
 

@@ -24,7 +24,7 @@ urlpatterns = [
     path('auth/register/', RegisterView.as_view()),
 
     # Path for verifying emails, users (or frontend must call this endpoint)
-    path(f'auth/{settings.EMAIL_VERIFICATION_URL_ENDPOINT}/<str:token>/<str:user64_id>/', 
+    path('auth/verify-email/<str:token>/<str:user64_id>/', 
         VerifyView.as_view(), name='verify_email'),
     
     # Tokens refresh must be done by logging in again
