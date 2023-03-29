@@ -16,7 +16,8 @@ class PublicationView( APIView ):
             "available" : request.data.get("available"),
             "reportable" : request.data.get("reportable"),
             "category" : request.data.get("category"),
-            "user" : request.data.get("user"),           
+            "user" : request.data.get("user"), 
+            "piority": request.data.get("priority"),        
         }       
 
         serializer = PublicationSerializer(data=data)

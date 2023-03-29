@@ -31,6 +31,7 @@ class Publication(models.Model):
         User, related_name= "publications",
         on_delete= models.CASCADE
     )
+    priority = models.BooleanField(default=False, null=False)
 
     
 
