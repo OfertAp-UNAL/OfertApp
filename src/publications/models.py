@@ -8,7 +8,6 @@ class Category(models.Model):
     
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, null=False, unique=True)
     name = models.CharField(max_length=50, null=False)
-        
 
 class Publication(models.Model):
 
@@ -33,6 +32,22 @@ class Publication(models.Model):
     )
     priority = models.BooleanField(default=False, null=False)
 
+class Offer(models.Model):
+    class Meta:
+        db_table = "OFFER"
+    
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, null=False, unique=True)
+    createdAt = models.DateTimeField(auto_now_add=True, null=False)
+    ammount = models.DecimalField(max_digits=13,decimal_places=0)
+    available = models.BooleanField(default=True, null=False) 
+    user = models.ForeignKey(
+        User, related_name= "offers",
+        on_delete= models.CASCADE
+    )       
+    publication = models.ForeignKey(
+        Publication, related_name="offers",
+        on_delete= models.CASCADE
+    )
     
 
     

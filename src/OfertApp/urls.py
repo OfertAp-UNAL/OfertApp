@@ -21,6 +21,6 @@ import publications.urls as publicationsUrls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/', include( authUrls) ),
+    path('api/v1/', include( authUrls)),
     path('api/v1/', include( publicationsUrls)),
 ]

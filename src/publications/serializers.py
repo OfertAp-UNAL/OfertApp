@@ -1,5 +1,5 @@
 import rest_framework.serializers as serializers
-from publications.models import Publication, Category
+from publications.models import Publication, Category, Offer
 
 class PublicationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,3 +13,9 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = (
             'name', 'id')
+        
+class OfferSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Offer
+        fields = (
+            'ammount', 'available', 'id', 'user', 'publication')

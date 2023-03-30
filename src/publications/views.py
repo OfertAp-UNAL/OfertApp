@@ -3,8 +3,8 @@ from django.contrib.auth.hashers import make_password
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from publications.serializers import PublicationSerializer, CategorySerializer
-from publications.models import Publication, Category
+from publications.serializers import PublicationSerializer, CategorySerializer, OfferSerializer
+from publications.models import Publication, Category, Offer
 
 class PublicationView( APIView ):
     def post( self, request ):
@@ -50,7 +50,7 @@ class CategoryView( APIView ):
 
         if serializer.is_valid():
             
-            castegory = serializer.save()          
+            category = serializer.save()          
 
                 
             return Response(serializer.data)
@@ -63,4 +63,34 @@ class CategoryView( APIView ):
         return Response({
             "status" : "success",
             "data" : CategorySerializer(categories, many=True).data
+        })
+    
+class OfferView( APIView ):
+    def post( self, request ):
+        data = {
+            "ammount" : request.data.get("ammount"),
+            "available" : request.data.get("available"),
+            "id" : request.data.get("id"),
+            "user" : request.data.get("user"),
+            "publication" : request.data.get("publication"),
+
+        }       
+
+        serializer = OfferSerializer(data=data)
+
+        if serializer.is_valid():
+            
+            offer = serializer.save()          
+
+                
+            return Response(serializer.data)
+        
+        return Response(serializer.errors)
+    
+    def get(self, request):
+        offers = Offer.objects.all()
+
+        return Response({
+            "status" : "success",
+            "data" : OfferSerializer(offers, many=True).data
         })
