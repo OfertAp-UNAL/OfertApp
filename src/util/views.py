@@ -14,7 +14,7 @@ class MunicipalityView( APIView ):
             # A filter must be applied
             if type == "department":
                 # Get all municipalities of a department
-                return service.getMunicipalitiesByDepartment(value)
+                return service.getMunicipalitiesByDepartmentName(value)
             elif type == "region":
                 # Get all municipalities of a region
                 return service.getMunicipalitiesByRegion(value)

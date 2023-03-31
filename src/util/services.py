@@ -20,6 +20,12 @@ class MunicipalityService():
             # Send request
             session = requests.Session()
             response = session.send(request.prepare())
+
+            if( response.status_code != 200 ):
+                return {
+                    "status" : "error",
+                    "error" :  response.status_code
+                }
         except requests.exceptions.RequestException as e:
             return {
                 "status" : "error",
@@ -77,9 +83,15 @@ class MunicipalityService():
         request = self.buildRequest()
         return self.friendlyResponse(request, many = True)
     
-    def getMunicipalitiesByDepartment(self,departmentId):
+    def getMunicipalitiesByDepartmentId(self,departmentId):
         request = self.buildRequest({
             "c_digo_dane_del_departamento" : departmentId
+        })
+        return self.friendlyResponse(request, many = True)
+
+    def getMunicipalitiesByDepartmentName(self,departmentName):
+        request = self.buildRequest({
+            "departamento" : departmentName
         })
         return self.friendlyResponse(request, many = True)
 
