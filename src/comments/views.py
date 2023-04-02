@@ -11,7 +11,7 @@ class CommentView( APIView ):
         try:
             publication = Publication.objects.get(pk=publicationId)
         except Publication.DoesNotExist:
-            return Response({
+            return Response(status = 400, data = {
                 "status" : "error",
                 "error" : "Invalid publication id"
             })
@@ -20,19 +20,19 @@ class CommentView( APIView ):
             try:
                 comment = publication.comments.get(pk=commentId)
 
-                return Response({
+                return Response(status = 200, data = {
                     "status" : "success",
                     "data" : PublicationCommentSerializer(comment).data
                 })
             except Comment.DoesNotExist:
-                return Response({
+                return Response(status = 400, data = {
                     "status" : "error",
                     "error" : "Invalid comment id"
                 })
         
         # List all comments in publication
         comments = publication.comments.all()
-        return Response({
+        return Response(status = 200, data = {
             "status" : "success",
             "data" : PublicationCommentSerializer(comments, many=True).data
         })
@@ -41,7 +41,7 @@ class CommentView( APIView ):
 
         # Check if user is authenticated
         if not request.user.is_authenticated:
-            return Response({
+            return Response(status = 401, data = {
                 "status" : "error",
                 "error" : "You must be logged in to perform this action"
             })
@@ -57,12 +57,12 @@ class CommentView( APIView ):
         serializer = CommentSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response({
+            return Response(status = 200, data = {
                 "status" : "success",
                 "data" : serializer.data
             })
         
-        return Response({
+        return Response(status = 400, data = {
             "status" : "error",
             "errors" : serializer.errors
         })
@@ -74,12 +74,12 @@ class ReactionView( APIView ):
         try:
             comment = Comment.objects.get(pk=commentId)
         except Comment.DoesNotExist:
-            return Response({
+            return Response(status = 400, data = {
                 "status" : "error",
                 "error" : "Invalid comment id"
             })
         
-        return Response({
+        return Response(status = 200, data = {
             "status" : "success",
             "data" : ReactionSerializer(comment.reactions.all(), many=True).data
         })
@@ -88,7 +88,7 @@ class ReactionView( APIView ):
         
         # Check if user is authenticated
         if not request.user.is_authenticated:
-            return Response({
+            return Response(status = 401, data = {
                 "status" : "error",
                 "error" : "You must be logged in to perform this action"
             })
@@ -96,7 +96,7 @@ class ReactionView( APIView ):
         try:
             comment = Comment.objects.get(pk=commentId)
         except Comment.DoesNotExist:
-            return Response({
+            return Response(status = 400, data = {
                 "status" : "error",
                 "error" : "Invalid comment id"
             })
@@ -110,12 +110,12 @@ class ReactionView( APIView ):
         serializer = ReactionSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response({
+            return Response(status = 200, data = {
                 "status" : "success",
                 "data" : serializer.data
             })
         
-        return Response({
+        return Response(status = 400, data = {
             "status" : "error",
             "errors" : serializer.errors
         })

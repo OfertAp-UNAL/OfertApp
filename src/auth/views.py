@@ -30,7 +30,7 @@ class LoginView( APIView ):
             )
         except Exception as e:
             print(e)
-            return Response({
+            return Response(status = 401, data = {
                 "status" : "error",
                 "error" : "Invalid credentials"
             })
@@ -40,7 +40,7 @@ class LoginView( APIView ):
 
             # Check if the user is blocked
             if user.blocked:
-                return Response({
+                return Response(status = 401, data = {
                     "status" : "error",
                     "error" : "Your account has been blocked"
                 })
@@ -52,7 +52,7 @@ class LoginView( APIView ):
 
                 refresh = CustomTokenPairSerializer.get_token(user)
 
-                return Response({
+                return Response(status = 200, data = {
                     "status" : "success",
                     "token" : str(refresh.access_token),
                 })
@@ -61,7 +61,7 @@ class LoginView( APIView ):
                 # Force the user to verify his Email
                 #accountService.sendVerificationEmail(user)
 
-                return Response({
+                return Response(status = 401, data = {
                     "status" : "error",
                     "error" : "Please verify your account by checking your email"
                 })
@@ -76,11 +76,11 @@ class LogoutView( APIView ):
         if request.user.is_authenticated:
             request.user.auth_token.delete()
 
-            return Response({
+            return Response(status = 200, data = {
                 "status" : "success"
             })
         
-        return Response({
+        return Response(status = 401, data = {
             "status" : "error",
             "error" : "You are not logged in"
         })
@@ -118,7 +118,7 @@ class RegisterView( APIView ):
             
             # Verify user's identity
             if not accountService.checkAccount(data):
-                return Response({
+                return Response(status = 400, data = {
                     "status" : "error",
                     "error" : "Invalid identity"
                 })
@@ -131,17 +131,17 @@ class RegisterView( APIView ):
                 # Give this user a token, but next time he will have to verify his account
                 refresh = CustomTokenPairSerializer.get_token(user)
 
-                return Response({
+                return Response(status = 200, data = {
                     "status" : "success",
                     "token" : str(refresh.access_token),
                 })
             
-            return Response({
+            return Response(status = 400, data = {
                 "status" : "error",
                 "error" : "Invalid form body"
             })
         
-        return Response({
+        return Response(status = 400, data = {
             "status" : "error",
             "errors" : serializer.errors
         })
@@ -150,12 +150,12 @@ class UserInfoView( APIView ):
     def get(self, request):
         user = request.user
         if user is not None and user.is_authenticated:
-            return Response({
+            return Response(status = 200, data = {
                 "status" : "success",
                 "data" : UserSerializer(user).data
             })
         
-        return Response({
+        return Response(status = 401, data = {
             "status" : "error",
             "error" : "You aren't logged in"
         })
@@ -198,22 +198,22 @@ class UserInfoView( APIView ):
                 serializer.save()
                 if user:
 
-                    return Response({
+                    return Response(status = 200, data = {
                         "status" : "success",
                         "data" : UserSerializer(user).data
                     })
                 
-                return Response({
+                return Response(status = 400, data = {
                     "status" : "error",
                     "error" : "Invalid form body"
                 })
             
-            return Response({
+            return Response(status = 400, data = {
                 "status" : "error",
                 "errors" : serializer.errors
             })
         
-        return Response({
+        return Response(status = 401, data = {
             "status" : "error",
             "error" : "You aren't logged in"
         })
@@ -221,7 +221,7 @@ class UserInfoView( APIView ):
 class VerifyView( APIView ):
     def get(self, request, token = None, user64_id = None ):
         if token is None or user64_id is None:
-            return Response({
+            return Response(status = 400, data = {
                 "status" : "error",
                 "error" : "Invalid request, include /token/user64_id/"
             })
@@ -230,7 +230,7 @@ class VerifyView( APIView ):
             user_id = urlsafe_base64_decode(user64_id).decode()
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
-            return Response({
+            return Response(status = 400, data = {
                 "status" : "error",
                 "error" : "Invalid token"
             })
@@ -241,12 +241,12 @@ class VerifyView( APIView ):
             user.verified = True
             user.save()
 
-            return Response({
+            return Response(status = 200, data = {
                 "status" : "success",
                 "message" : "Email verified"
             })
         
-        return Response({
+        return Response(status = 400, data = {
             "status" : "error",
             "error" : "Invalid token"
         })
