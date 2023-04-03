@@ -1,21 +1,39 @@
 import rest_framework.serializers as serializers
-from publications.models import Publication, Category, Offer
+from publications.models import Publication, Category, Offer, PublicationSupport
+from auth.serializers import UserSerializer
+from comments.serializers import PublicationCommentSerializer
 
-class PublicationSerializer(serializers.ModelSerializer):
+class OfferSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Publication
+        model = Offer
         fields = (
-            'title', 'description', 'minOffer', 'endDate', 'available', 'reportable', 'category',
-            'user', 'id', 'priority')
-
+            'ammount', 'available', 'id', 'user', 'publication')
+        
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = (
             'name', 'id')
         
-class OfferSerializer(serializers.ModelSerializer):
+class PublicationSupportSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Offer
+        model = PublicationSupport
         fields = (
-            'ammount', 'available', 'id', 'user', 'publication')
+            'id', 'type', 'data', 'description')
+
+class PublicationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Publication
+        fields = (
+            'title', 'description', 'minOffer', 'endDate', 'available', 'reportable', 'category',
+            'user', 'id', 'priority', 'user', 'comments', 'offers', 'supports')
+    user = UserSerializer()
+    comments = PublicationCommentSerializer(many = True)
+    offers = OfferSerializer(many = True)
+    category = CategorySerializer()
+    supports = PublicationSupportSerializer(many = True)
+
+
+        
+
+    

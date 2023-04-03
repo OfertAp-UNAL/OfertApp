@@ -48,6 +48,30 @@ class Offer(models.Model):
         Publication, related_name="offers",
         on_delete= models.CASCADE
     )
+
+class PublicationSupport(models.Model):
+    class Meta:
+        db_table = "PUBLICATIONSUPPORT"
+    
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, null=False, unique=True)
+    class TypeChoices(models.TextChoices):
+        IMAGE = 'IMAGE'
+        VIDEO = 'VIDEO'
+
+    type = models.CharField(
+        max_length=45, 
+        null=False, 
+        choices=TypeChoices.choices,
+        db_column="sopType"
+    ) 
+    data = models.FileField(upload_to= 'publications_support_data', blank=False, null=False, db_column="sopData")
+    createdAt = models.DateTimeField(auto_now_add=True, null=False)
+    description = models.CharField(max_length=255, null=False)
+
+    publication = models.ForeignKey(
+        Publication, related_name="supports",
+        on_delete= models.CASCADE
+    )
     
 
     
