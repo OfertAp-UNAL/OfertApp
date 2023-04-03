@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from auth.serializers import UserSerializer
 from auth.token.serializers import CustomTokenPairSerializer
-from .token.verifyEmailToken import emailTokenGenerator
+from .token.customTokens import emailTokenGenerator, resetPasswordTokenGenerator
 from .models import User
 
 from auth.services import AccountCheckService, PermissionsCheckService
@@ -219,7 +219,7 @@ class UserInfoView( APIView ):
         })
 
 class VerifyView( APIView ):
-    def get(self, request, token = None, user64_id = None ):
+    def get(self, _, token = None, user64_id = None ):
         if token is None or user64_id is None:
             return Response(status = 400, data = {
                 "status" : "error",
@@ -249,4 +249,73 @@ class VerifyView( APIView ):
         return Response(status = 400, data = {
             "status" : "error",
             "error" : "Invalid token"
+        })
+
+class PasswordResetView( APIView ):
+    def post(self, request):
+        email = request.data.get("email")
+        token = request.data.get("token")
+        user64_id = request.data.get("user64_id")
+        password = request.data.get("password")
+
+        if email is not None:
+            # Its a request to send a password reset email
+            email = request.data.get("email")
+            if email is None:
+                return Response(status = 400, data = {
+                    "status" : "error",
+                    "error" : "Invalid request, include /email/"
+                })
+
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                return Response(status = 400, data = {
+                    "status" : "error",
+                    "error" : "Email doesn't exist"
+                })
+
+            # Check if user is verified
+            if not user.verified:
+                return Response(status = 400, data = {
+                    "status" : "error",
+                    "error" : "Email isn't verified"
+                })
+
+            # Send password reset email
+            accountService.sendPasswordResetEmail(user)
+
+            return Response(status = 200, data = {
+                "status" : "success",
+                "message" : "Email sent"
+            })
+
+        elif token is not None and user64_id is not None and password is not None:
+            # Its a request for reseting user's password
+            try:
+                user_id = urlsafe_base64_decode(user64_id).decode()
+                user = User.objects.get(id=user_id)
+            except User.DoesNotExist:
+                return Response(status = 400, data = {
+                    "status" : "error",
+                    "error" : "Invalid token"
+                })
+            
+            if resetPasswordTokenGenerator.check_token(user, token):
+                user.set_password(password)
+                user.save()
+
+                return Response(status = 200, data = {
+                    "status" : "success",
+                    "message" : "Password changed"
+                })
+
+            return Response(status = 400, data = {
+                "status" : "error",
+                "error" : "Invalid token"
+            })
+        
+        return Response(status = 400, data = {
+            "status" : "error",
+            "error" : "Invalid request, include /email/ or /token/user64_id/password/"
         })

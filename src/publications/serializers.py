@@ -4,10 +4,15 @@ from auth.serializers import UserSerializer
 from comments.serializers import PublicationCommentSerializer
 
 class OfferSerializer(serializers.ModelSerializer):
+
+    # User author is a relevant part of offers information
+    user = UserSerializer()
+
     class Meta:
         model = Offer
         fields = (
-            'ammount', 'available', 'id', 'user', 'publication')
+            'amount', 'available', 'id', 'user', 'createdAt')
+        ordering = 'amount'
         
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,12 +32,28 @@ class PublicationSerializer(serializers.ModelSerializer):
         fields = (
             'title', 'description', 'minOffer', 'endDate', 'available', 'reportable', 'category',
             'user', 'id', 'priority', 'user', 'comments', 'offers', 'supports')
+    
     user = UserSerializer()
-    comments = PublicationCommentSerializer(many = True)
-    offers = OfferSerializer(many = True)
     category = CategorySerializer()
-    supports = PublicationSupportSerializer(many = True)
 
+    # Nested serializers
+    comments = serializers.SerializerMethodField(
+        'get_comments'
+    )
+    offers = serializers.SerializerMethodField(
+        'get_offers'
+    )
+
+    # Here the order doesn't care at all
+    supports = PublicationSupportSerializer(many=True)
+
+    def get_comments(self, publication):
+        comments = publication.comments.all().order_by('-createdAt')
+        return PublicationCommentSerializer(comments, many=True).data
+
+    def get_offers(self, publication):
+        offers = publication.offers.all().order_by('-amount')
+        return OfferSerializer(offers, many=True).data
 
         
 

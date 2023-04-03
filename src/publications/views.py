@@ -24,27 +24,43 @@ class PublicationView( APIView ):
 
         if serializer.is_valid():
             
-            publication = serializer.save()          
-
+            serializer.save()
                 
             return Response(status = 200, data = {
                 "status" : "success",
                 "data" : serializer.data
             })
         
-        return Response(status = 201, data = {
+        return Response(status = 400, data = {
             "status" : "error", 
             "errors" : serializer.errors
         })
     
-    def get(self, request):
+    def get(self, _, publicationId = None):
+        if publicationId is not None:
+            try:
+                publication = Publication.objects.get(pk=publicationId)
+                return Response(status = 200, data = {
+                    "status" : "success",
+                    "data" : PublicationSerializer(publication).data
+                })
+            except Publication.DoesNotExist:
+                return Response(status = 400, data = {
+                    "status" : "error",
+                    "error" : "Invalid publication id"
+                })
+
         publications = Publication.objects.all()
+        publications = sorted(
+            publications,
+            key = lambda publication: publication.getPriorityScore(),
+            reverse = True
+        )
 
         return Response(status = 200, data = {
             "status" : "success",
             "data" : PublicationSerializer(publications, many=True).data
         })
-        
 
 class CategoryView( APIView ):
     def post( self, request ):
@@ -56,7 +72,7 @@ class CategoryView( APIView ):
 
         if serializer.is_valid():
             
-            category = serializer.save()          
+            serializer.save()          
 
                 
             return Response(status = 200, data = {
@@ -85,16 +101,12 @@ class OfferView( APIView ):
             "id" : request.data.get("id"),
             "user" : request.data.get("user"),
             "publication" : request.data.get("publication"),
-
         }       
 
         serializer = OfferSerializer(data=data)
 
         if serializer.is_valid():
-            
-            offer = serializer.save()          
-
-                
+            serializer.save()          
             return Response(serializer.data)
         
         return Response(serializer.errors)

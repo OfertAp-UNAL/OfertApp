@@ -184,6 +184,9 @@ EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
 
+# Tokens default expiration time
+PASSWORD_RESET_TIMEOUT = 7200 # 2 Hours
+
 # MasterCard data
 MC_API_BASE_URL= env("MC_API_BASE_URL")
 MC_PRIVATE_KEY_PATH = env("MC_PRIVATE_KEY_PATH")
@@ -195,6 +198,9 @@ MUNICIPALITY_SERVICE_URL = "https://www.datos.gov.co/resource/xdk5-pm3f.json"
 
 # Get verification endpoint
 EMAIL_VERIFICATION_URL_ENDPOINT = env("EMAIL_VERIFICATION_URL_ENDPOINT")
+
+# Get password recovery endpoint
+EMAIL_PASSWORD_RESET_URL_ENDPOINT = env("EMAIL_PASSWORD_RESET_URL_ENDPOINT")
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

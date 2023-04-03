@@ -1,0 +1,556 @@
+{
+	"info": {
+		"_postman_id": "9e04e2d2-da04-4bc8-97cd-f75f1dfd152d",
+		"name": "Project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25456599"
+	},
+	"item": [
+		{
+			"name": "Login User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user\" : \"edgardanielgd123@gmail.com\",\r\n    \"password\" : \"Ola\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/v1/auth/login/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"login",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User Info",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjgwNTQ5NjEwLCJpYXQiOjE2ODA1NDc4MTAsImp0aSI6ImI4MTczMWE1YmYzNzRkYjNhZDUwYTI3ZGU2ZjAzODkyIiwidXNlcl9pZCI6MTAwMDgzMzEwOCwidXNlcm5hbWUiOiJlZGdvbnphbGV6ZGkyIiwiZW1haWwiOiJlZGdhcmRhbmllbGdkMTIzQGdtYWlsLmNvbSJ9.TeQRB0ve7umU5x0vj7FQvr52TpgtxGOt2Jajlgv_Co0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/api/v1/userinfo/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"userinfo",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "profilePicture",
+							"type": "file",
+							"src": "/D:/UNAL Archivo/Pensamiento Sistemico/tree-736885__480.jpg",
+							"disabled": true
+						},
+						{
+							"key": "id",
+							"value": "1000833107",
+							"type": "text"
+						},
+						{
+							"key": "firstName",
+							"value": "Edgar",
+							"type": "text"
+						},
+						{
+							"key": "lastName",
+							"value": "Gonzalez",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "testedgd123@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "edgonzalezdi",
+							"type": "text"
+						},
+						{
+							"key": "birthdate",
+							"value": "2002-10-20",
+							"type": "text"
+						},
+						{
+							"key": "phone",
+							"value": "3005410888",
+							"type": "text"
+						},
+						{
+							"key": "address",
+							"value": "Cra 18 No 13 12",
+							"type": "text"
+						},
+						{
+							"key": "townId",
+							"value": "2.45",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "12345",
+							"type": "text"
+						},
+						{
+							"key": "paymentAccountType",
+							"value": "NQ",
+							"type": "text"
+						},
+						{
+							"key": "paymentAccountNumber",
+							"value": "3124994899",
+							"type": "text"
+						},
+						{
+							"key": "idenIdType",
+							"value": "CC",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8000/api/v1/auth/register/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"register",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patch Update User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc5OTY4NDU0LCJpYXQiOjE2Nzk5NjY2NTQsImp0aSI6IjhkNTAwMDI2YzI4YTQyZmE5ODZmMzE3YWFjMzJiY2YwIiwidXNlcl9pZCI6MTAwMDgzMzEwNywidXNlcm5hbWUiOiJlZGdvbnphbGV6ZGkiLCJlbWFpbCI6InRlc3RlZGdkMTIzQGdtYWlsLmNvbSJ9.dpe4Z1WO6viKV5uwlcFxK8D1tpWr4CnQsoYJwl6UudY",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "profilePicture",
+							"type": "file",
+							"src": "/D:/Download/png-transparent-point-art-julia-set-pattern-circle-purple-violet-text-thumbnail.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8000/api/v1/userinfo/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"userinfo",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Publications",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/api/v1/publications/04e5fc67-8d49-41ef-9d71-6d37ad472e49/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"publications",
+						"04e5fc67-8d49-41ef-9d71-6d37ad472e49",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Publications",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "title",
+							"value": "refrigerador",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "coca cola",
+							"type": "text"
+						},
+						{
+							"key": "minOffer",
+							"value": "52600",
+							"type": "text"
+						},
+						{
+							"key": "endDate",
+							"value": "2032-10-20T18:00",
+							"type": "text"
+						},
+						{
+							"key": "available",
+							"value": "true",
+							"type": "text"
+						},
+						{
+							"key": "reportable",
+							"value": "true",
+							"type": "text"
+						},
+						{
+							"key": "category",
+							"value": "e723609b-f71e-4864-8d99-e3c225453386",
+							"type": "text"
+						},
+						{
+							"key": "user",
+							"value": "1000833107",
+							"type": "text"
+						},
+						{
+							"key": "priority",
+							"value": "false",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8000/api/v1/publications/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"publications",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Category",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/api/v1/categories/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"categories",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Category",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "electrodomesticos",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8000/api/v1/categories/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"categories",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Comment",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/api/v1/comments/40112f83-1235-4d21-a468-568f58f55dc1/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"comments",
+						"40112f83-1235-4d21-a468-568f58f55dc1",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Comment",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc5ODUzOTQ1LCJpYXQiOjE2Nzk4NTIxNDUsImp0aSI6ImZiZDlhMmY2OTA4OTRkZWQ5Mjg5YmUwMTY4Yjk1NWI5IiwidXNlcl9pZCI6MTAwMDgzMzEwNywidXNlcm5hbWUiOiJlZGdvbnphbGV6ZGkiLCJlbWFpbCI6InRlc3RlZGdkMTIzQGdtYWlsLmNvbSJ9.p0h6BPMeB5WiYLDv9lnyStfWyNnQBkJftLGU4Zt1gIs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"text\" : \"Ola de mar2\",\r\n    \"title\" : \"Cosa2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/v1/comments/315e590a-cc27-4c6d-a170-483cd8afba7e/8c000b98-8880-4611-8859-58949a8b7c76/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"comments",
+						"315e590a-cc27-4c6d-a170-483cd8afba7e",
+						"8c000b98-8880-4611-8859-58949a8b7c76",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Municipalities",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://www.datos.gov.co/resource/xdk5-pm3f.json",
+					"protocol": "https",
+					"host": [
+						"www",
+						"datos",
+						"gov",
+						"co"
+					],
+					"path": [
+						"resource",
+						"xdk5-pm3f.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Departments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/api/v1/departments/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"departments",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Municipalities By Department",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/api/v1/municipalities/department/Antioquia/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"municipalities",
+						"department",
+						"Antioquia",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Municipalities by DepName",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Send Reset password email",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"edgardanielgd123@gmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/v1/auth/recover-password/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"recover-password",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reset password email",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"token\" : \"bm3d1o-3736b88e807bde5df1335b4387021ac2\",\r\n    \"user64_id\" : \"MTAwMDgzMzEwOA\",\r\n    \"password\" : \"Ola\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/v1/auth/recover-password/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"recover-password",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

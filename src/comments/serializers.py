@@ -36,5 +36,5 @@ class PublicationCommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = [
             'id', 'text', 'title', 'createdAt', 'user',
-            'replies', 'reactions_count', 'parent'
+            'replies', 'reactionsCount', 'parent',
         ]

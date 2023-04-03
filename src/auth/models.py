@@ -74,8 +74,9 @@ class User (AbstractUser):
         db_column="usrTownId"
     )
     profilePicture = models.ImageField(
-        upload_to='profile_pictures', blank=True, null=True,
-        db_column="usrProfilePicture"
+        upload_to='profile_pictures', blank=False, null=False,
+        db_column="usrProfilePicture",
+        default="defaultProfile.png"
     )
     blocked = models.BooleanField(
         default=False, null=False,

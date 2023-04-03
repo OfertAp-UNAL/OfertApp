@@ -4,7 +4,10 @@
 *.pyc
 __pycache__
 db.sqlite3
-media
+
+# Media default files
+!src/media/defaultProfile.png
+!src/media/defaultSupport.mp4
 
 # Backup files # 
 *.bak 
@@ -20,6 +23,7 @@ media
 # Sensitive or high-churn files
 **.p12
 profile_pictures
+publications_support_data
 
 # AWS User-specific
 .idea/**/aws.xml

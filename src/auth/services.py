@@ -2,7 +2,7 @@ import requests
 import environ
 import base64
 from django.conf import settings
-from .token.verifyEmailToken import emailTokenGenerator
+from .token.customTokens import emailTokenGenerator, resetPasswordTokenGenerator
 from django.core.mail import EmailMultiAlternatives
 from django.utils.http import urlsafe_base64_encode
 from dict_hash import sha256
@@ -204,6 +204,42 @@ class AccountCheckService():
             <p>Para verificar tu cuenta haz click en el siguiente enlace
             <a href="{settings.WEB_URL}{settings.EMAIL_VERIFICATION_URL_ENDPOINT}/{token}/{user_id}/">
                 Verificar cuenta!
+            </a></p>
+
+            No contestes a este mensaje (y perdon por el spam :D)
+        '''
+
+        try:
+            # Sometimes emails get ratelimited
+            email = EmailMultiAlternatives(
+                subject,
+                text_content,
+                from_email,
+                [to]
+            )
+            email.content_subtype = "html"
+
+            email.send()
+
+        except Exception as e:
+            print(e)
+
+    def sendPasswordResetEmail( self, user ):
+
+        # Getting user's id
+        user_id = urlsafe_base64_encode(str(user.id).encode('utf-8'))
+
+        # Generate an unique token for the user
+        token = resetPasswordTokenGenerator.make_token(user)
+
+        subject = '[OfertApp Team] Cambia tu contraseña'
+        from_email = settings.EMAIL_HOST_USER
+        to = user.email
+        text_content = f'''
+            <h1 style="color:#00BF63">Hola {user.firstName}</h1>
+            <p>Para cambiar tu contraseña haz click en el siguiente enlace
+            <a href="{settings.WEB_URL}{settings.EMAIL_PASSWORD_RESET_URL_ENDPOINT}/{token}/{user_id}/">
+                Cambiar contraseña!
             </a></p>
 
             No contestes a este mensaje (y perdon por el spam :D)

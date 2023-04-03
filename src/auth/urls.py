@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import LoginView, RegisterView, VerifyView, UserInfoView, LogoutView
+from .views import LoginView, RegisterView, VerifyView, UserInfoView, LogoutView, PasswordResetView
 from django.conf import settings
 
 urlpatterns = [
@@ -26,6 +26,11 @@ urlpatterns = [
     # Path for verifying emails, users (or frontend must call this endpoint)
     path('auth/verify-email/<str:token>/<str:user64_id>/', 
         VerifyView.as_view(), name='verify_email'),
+
+    # Path for sending a password recovery email for a certain user
+    path('auth/recover-password/',
+        PasswordResetView.as_view(), name='recover_password'
+    ),
     
     # Tokens refresh must be done by logging in again
 
