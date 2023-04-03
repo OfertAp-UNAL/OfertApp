@@ -27,14 +27,20 @@ class PublicationView( APIView ):
             publication = serializer.save()          
 
                 
-            return Response(serializer.data)
+            return Response(status = 200, data = {
+                "status" : "success",
+                "data" : serializer.data
+            })
         
-        return Response(serializer.errors)
+        return Response(status = 201, data = {
+            "status" : "error", 
+            "errors" : serializer.errors
+        })
     
     def get(self, request):
         publications = Publication.objects.all()
 
-        return Response({
+        return Response(status = 200, data = {
             "status" : "success",
             "data" : PublicationSerializer(publications, many=True).data
         })
@@ -53,14 +59,20 @@ class CategoryView( APIView ):
             category = serializer.save()          
 
                 
-            return Response(serializer.data)
+            return Response(status = 200, data = {
+                "status" : "success",
+                "data" : serializer.data
+            })
         
-        return Response(serializer.errors)
+        return Response(status = 400, data = {
+            "status": "error",
+            "errors" : serializer.errors
+        })
     
     def get(self, request):
         categories = Category.objects.all()
 
-        return Response({
+        return Response(status = 200, data = {
             "status" : "success",
             "data" : CategorySerializer(categories, many=True).data
         })

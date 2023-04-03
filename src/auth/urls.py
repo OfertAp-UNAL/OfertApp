@@ -15,16 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import LoginView, RegisterView, VerifyView, UserInfoView
-from .token.views import CustomTokenObtainPairView, CustomTokenRefreshView
+from .views import LoginView, RegisterView, VerifyView, UserInfoView, LogoutView
 from django.conf import settings
 
 urlpatterns = [
     path('auth/login/', LoginView.as_view()),
+    path('auth/logout/', LogoutView.as_view(), name='logout'),
     path('auth/register/', RegisterView.as_view()),
 
     # Path for verifying emails, users (or frontend must call this endpoint)
-    path(f'auth/{settings.EMAIL_VERIFICATION_URL_ENDPOINT}/<str:token>/<str:user64_id>/', 
+    path('auth/verify-email/<str:token>/<str:user64_id>/', 
         VerifyView.as_view(), name='verify_email'),
     
     # Tokens refresh must be done by logging in again

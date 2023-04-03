@@ -1,6 +1,7 @@
 from faker import Faker
 from auth.models import User, Admin
 from publications.models import Publication, Category
+from comments.models import Comment, Reaction
 from django.core.management.base import BaseCommand
     
 class Command(BaseCommand):
@@ -43,7 +44,8 @@ class Command(BaseCommand):
                 accountId = i,
                 townId = fake.random_element(elements=(
                     1.2, 2.3, 3.4, 4.1, 5.4, 6.2, 7.7, 8.99, 9.10, 10.21
-                ))
+                )),
+                verified = True
             )
             for i in usersIds
         ]
@@ -67,7 +69,7 @@ class Command(BaseCommand):
         ]
 
         self.stdout.write("Seeding Publications....")
-        _ = [
+        publications = [
             Publication.objects.create(
                 title = fake.text(max_nb_chars=45),
                 description = fake.text(),
@@ -84,4 +86,44 @@ class Command(BaseCommand):
             )
             for _ in range(number)
         ]
-            
+        
+        self.stdout.write("Seeding Comments....")
+        comments = [
+            Comment.objects.create(
+                text = fake.text(),
+                title = fake.text(max_nb_chars=45),
+                user = users[
+                    fake.random_int(min=0, max=len(users) - 1)
+                ],
+                publication = publications[
+                    fake.random_int(min=0, max=len(publications) - 1)
+                ],
+                parent = None
+            )
+            for _ in range(number)
+        ]
+
+        # Relate comments with parents randomly
+        _ = [
+            Comment.objects.filter(id=comments[i].id).update(
+                parent = comments[
+                    fake.random_int(min=0, max=i - 1)
+                ] if fake.boolean() else None
+            )
+            for i in range(len(comments) - 1, -1, -1)
+        ]
+
+        self.stdout.write("Seeding Reactions....")
+        _ = [
+            Reaction.objects.create(
+                type = fake.random_element(elements=('LIKE', 'DISLIKE', 'WARNING')),
+                user = users[
+                    fake.random_int(min=0, max=len(users) - 1)
+                ],
+                comment = comments[
+                    fake.random_int(min=0, max=len(comments) - 1)
+                ]
+            )
+            for _ in range(number)
+        ]
+

@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'reports.apps.ReportsConfig',
     'comments.apps.CommentsConfig',
     'admins.apps.AdminsConfig',
+    'util.apps.UtilConfig',
     'core.apps.CoreConfig',
     "rest_framework",
     "corsheaders",
@@ -171,6 +172,9 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
 ]
 
+# Config media urls
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Smtp config
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -185,6 +189,9 @@ MC_API_BASE_URL= env("MC_API_BASE_URL")
 MC_PRIVATE_KEY_PATH = env("MC_PRIVATE_KEY_PATH")
 MC_CARD_KEY_PASSWORD = env("MC_CARD_KEY_PASSWORD")
 MC_CONSUMER_KEY = env("MC_CONSUMER_KEY")
+
+# Municipality service
+MUNICIPALITY_SERVICE_URL = "https://www.datos.gov.co/resource/xdk5-pm3f.json"
 
 # Get verification endpoint
 EMAIL_VERIFICATION_URL_ENDPOINT = env("EMAIL_VERIFICATION_URL_ENDPOINT")
