@@ -44,7 +44,7 @@ APPEND_SLASH = False
 WEB_URL = env("WEB_URL")
 
 ALLOWED_HOSTS = [
-    "localhost"
+    "localhost",
 ]
 
 # Application definition
