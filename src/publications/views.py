@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
+from django.db.models import Count
 from publications.serializers import PublicationSerializer, CategorySerializer, OfferSerializer
 from publications.models import Publication, Category, Offer
 
@@ -50,13 +50,78 @@ class PublicationView( APIView ):
                     "error" : "Invalid publication id"
                 })
 
-        publications = Publication.objects.all()
-        publications = sorted(
-            publications,
-            key = lambda publication: publication.getPriorityScore(),
-            reverse = True
-        )
+        # Get parameters of filtering
+        title = self.request.query_params.get("title", None)
+        user = self.request.query_params.get("user", None)
+        availableOnly = self.request.query_params.get("available", False)
+        minPrice = self.request.query_params.get("minPrice", None)
+        maxPrice = self.request.query_params.get("maxPrice", None)
+        orderby = self.request.query_params.get("orderBy", "id")
+        limit = self.request.query_params.get("limit", 100)
+        print(title, user, availableOnly, minPrice, maxPrice, orderby, limit)
 
+        # Check orderby validity
+        if orderby not in ["relevance", "price", "offers", "comments"]:
+            orderby = "id" # Make id a default
+
+        # Get publications
+        publications = Publication.objects.all()
+
+        # Filter by title if provided
+        if title is not None:
+            publications = publications.filter(title__icontains=title)
+        
+        # Filter by user if provided
+        if user is not None:
+            publications = publications.filter(user__id=user)
+        
+        # Filter by availability if provided
+        if availableOnly is not None:
+            publications = publications.filter(available=True)
+
+        # Filter by price if provided
+        if minPrice is not None:
+            try:
+                minPrice = float(minPrice)
+                publications = publications.filter(minOffer__gte=minPrice)
+            except ValueError:
+                pass
+
+        if maxPrice is not None:
+            try:
+                maxPrice = float(maxPrice)
+                publications = publications.filter(minOffer__lte=maxPrice)
+            except ValueError:
+                pass
+
+        # Order by provided filters
+        if orderby == "relevance":
+            publications = sorted(
+                publications,
+                key = lambda publication: publication.getPriorityScore(),
+                reverse = True
+            )
+        elif orderby == "price":
+            publications = publications.order_by("minOffer")
+        elif orderby == "offers":
+            publications = publications.annotate(
+                offersCount = Count("offers")
+            ).order_by("-offersCount")
+        elif orderby == "comments":
+            publications = publications.annotate(
+                commentsCount = Count("comments")
+            ).order_by("-commentsCount")
+
+        # Limit the number of publications
+        if limit is not None:
+            try:
+                limit = int(limit)
+            except ValueError:
+                limit = 100
+
+        publications = publications[:limit]
+
+        # Return the publications
         return Response(status = 200, data = {
             "status" : "success",
             "data" : PublicationSerializer(publications, many=True).data

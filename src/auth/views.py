@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
 from django.utils.http import urlsafe_base64_decode
 from rest_framework.views import APIView
@@ -74,7 +74,7 @@ class LoginView( APIView ):
 class LogoutView( APIView ):
     def get( self, request ):
         if request.user.is_authenticated:
-            request.user.auth_token.delete()
+            logout(request)
 
             return Response(status = 200, data = {
                 "status" : "success"
