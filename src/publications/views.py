@@ -20,6 +20,8 @@ class PublicationView( APIView ):
             "piority": request.data.get("priority"),        
         }       
 
+        data["supports"] = request.FILES["supports"]
+
         serializer = PublicationSerializer(data=data)
 
         if serializer.is_valid():
