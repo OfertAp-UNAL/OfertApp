@@ -2,6 +2,7 @@ from faker import Faker
 from auth.models import User, Admin
 from publications.models import Publication, Category, Offer, PublicationSupport
 from comments.models import Comment, Reaction
+from transactions.models import Transaction
 from django.core.management.base import BaseCommand
     
 class Command(BaseCommand):
@@ -51,7 +52,7 @@ class Command(BaseCommand):
         ]
 
         # 10% of Users will be admins        
-        _ = [
+        admins = [
             Admin.objects.create(
                 user = users[i],
                 hiredDate = fake.date()
@@ -150,6 +151,32 @@ class Command(BaseCommand):
                 description = fake.text(),
                 publication = publications[
                     fake.random_int(min=0, max=len(publications) - 1)
+                ]
+            )
+            for _ in range(number*10)
+        ]
+
+        # Seed transactions also
+
+        self.stdout.write("Seeding Transactions")
+        _ = [
+            Transaction.objects.create(
+                amount = fake.pydecimal(left_digits=13, right_digits=0, positive=True),
+                user = users[
+                    fake.random_int(min=0, max=len(users) - 1)
+                ],
+                offer = offers[
+                    fake.random_int(min=0, max=len(offers) - 1)
+                ],
+                type = fake.random_element(elements=('CS', 'BC')),
+                description = fake.text(),
+                prevBalance = fake.pydecimal(left_digits=13, right_digits=0, positive=True),
+                postBalance = fake.pydecimal(left_digits=13, right_digits=0, positive=True),
+                prevFrozen = fake.pydecimal(left_digits=13, right_digits=0, positive=True),
+                postFrozen = fake.pydecimal(left_digits=13, right_digits=0, positive=True),
+                flow = fake.random_element(elements=('I', 'O')),
+                admin = admins[
+                    fake.random_int(min=0, max=len(admins) - 1)
                 ]
             )
             for _ in range(number*10)

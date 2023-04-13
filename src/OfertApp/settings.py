@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'reports.apps.ReportsConfig',
     'comments.apps.CommentsConfig',
     'admins.apps.AdminsConfig',
+    'transactions.apps.TransactionsConfig',
     'util.apps.UtilConfig',
     'core.apps.CoreConfig',
     "rest_framework",
