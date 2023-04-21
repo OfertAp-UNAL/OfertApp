@@ -125,6 +125,7 @@ class Publication(models.Model):
         null=True,
         db_column="pubDeliveryId"
     )
+    
 
 class Offer(models.Model):
     class Meta:
