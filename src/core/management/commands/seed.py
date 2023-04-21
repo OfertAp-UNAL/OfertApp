@@ -2,8 +2,9 @@ from faker import Faker
 from auth.models import User, Admin
 from publications.models import Publication, Category, Offer, PublicationSupport
 from comments.models import Comment, Reaction
-from transactions.models import Transaction
+from transactions.models import Transaction, Payment, Account
 from django.core.management.base import BaseCommand
+from django.contrib.auth.hashers import make_password
     
 class Command(BaseCommand):
     
@@ -29,14 +30,24 @@ class Command(BaseCommand):
 
         # Users seeding
         self.stdout.write("Seeding Users....")
-        users = [
-            User.objects.create(
+
+        # Useful for testing purposes
+        def generate_user(i):
+            username = str(i) + fake.user_name()
+            email = str(i) + fake.email()
+            password = fake.password()
+
+            print(
+                f"Credentials for user {username}, {email} : [{password}]"
+            )
+
+            return User.objects.create(
                 id = i,
                 firstName = fake.first_name(),
                 lastName = fake.last_name(),
-                username = str(i) + fake.user_name(),
-                email = str(i) + fake.email(),
-                password = fake.password(),
+                username = username,
+                email = email,
+                password = make_password(password),
                 birthdate = fake.date(),
                 address = fake.address(),
                 idenIdType = fake.random_element(elements=('CC', 'CE', 'TI', 'PP', 'NIT')),
@@ -46,8 +57,13 @@ class Command(BaseCommand):
                 townId = fake.random_element(elements=(
                     1.2, 2.3, 3.4, 4.1, 5.4, 6.2, 7.7, 8.99, 9.10, 10.21
                 )),
-                verified = True
+                verified = True,
+                vipState = fake.random_element(elements=(True, False)),
+                vipPubCount = fake.random_int(min=0, max=10)
             )
+        
+        users = [
+            generate_user(i)
             for i in usersIds
         ]
 
@@ -129,7 +145,7 @@ class Command(BaseCommand):
         ]
 
         self.stdout.write("Seeding Offers (10 per Publication)")
-        _ = [
+        offers = [
             Offer.objects.create(
                 amount = fake.pydecimal(left_digits=13, right_digits=0, positive=True),
                 user = users[
@@ -162,14 +178,12 @@ class Command(BaseCommand):
         _ = [
             Transaction.objects.create(
                 amount = fake.pydecimal(left_digits=13, right_digits=0, positive=True),
-                user = users[
-                    fake.random_int(min=0, max=len(users) - 1)
-                ],
+                account = users[i % len(users)].account,
                 offer = offers[
                     fake.random_int(min=0, max=len(offers) - 1)
                 ],
                 type = fake.random_element(elements=('CS', 'BC')),
-                description = fake.text(),
+                description = fake.text( max_nb_chars=45 ),
                 prevBalance = fake.pydecimal(left_digits=13, right_digits=0, positive=True),
                 postBalance = fake.pydecimal(left_digits=13, right_digits=0, positive=True),
                 prevFrozen = fake.pydecimal(left_digits=13, right_digits=0, positive=True),
@@ -179,5 +193,5 @@ class Command(BaseCommand):
                     fake.random_int(min=0, max=len(admins) - 1)
                 ]
             )
-            for _ in range(number*10)
+            for i in range(number*10)
         ]
