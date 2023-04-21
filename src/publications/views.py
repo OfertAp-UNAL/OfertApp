@@ -60,7 +60,6 @@ class PublicationView( APIView ):
         maxPrice = self.request.query_params.get("maxPrice", None)
         orderby = self.request.query_params.get("orderBy", "id")
         limit = self.request.query_params.get("limit", 100)
-        print(title, user, availableOnly, minPrice, maxPrice, orderby, limit)
 
         # Check orderby validity
         if orderby not in ["relevance", "price", "offers", "comments"]:
@@ -76,11 +75,11 @@ class PublicationView( APIView ):
         # Filter by user if provided
         if user is not None:
             publications = publications.filter(user__id=user)
-        
-        # Filter by availability if provided
-        if availableOnly is not None:
-            publications = publications.filter(available=True)
 
+        # Filter by availability if provided
+        if availableOnly:
+            publications = publications.filter(available=True)
+        
         # Filter by price if provided
         if minPrice is not None:
             try:
@@ -113,6 +112,8 @@ class PublicationView( APIView ):
             publications = publications.annotate(
                 commentsCount = Count("comments")
             ).order_by("-commentsCount")
+        elif orderby == "date":
+            publications = publications.order_by("-createdAt")
 
         # Limit the number of publications
         if limit is not None:

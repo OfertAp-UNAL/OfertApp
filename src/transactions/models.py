@@ -1,6 +1,6 @@
 from django.db import models
-from auth.models import User, Admin
 from publications.models import Offer
+from auth.models import User, Admin
 import uuid
 
 class Account(models.Model):
@@ -8,7 +8,7 @@ class Account(models.Model):
     class Meta:
         db_table = "ACCOUNT"
     
-    id = models.OneToOneField(
+    user = models.OneToOneField(
         User,
         primary_key=True,
         on_delete=models.CASCADE,
@@ -30,6 +30,9 @@ class Account(models.Model):
 
 class Payment(models.Model):
 
+    class Meta:
+        db_table = "PAYMENT"
+    
     class PaymentTypeChoices(models.TextChoices):
         CREDIT_CARD = 'CC' # Credit Card
         PAY_PAL = 'PP' # PayPal
@@ -77,6 +80,9 @@ class Payment(models.Model):
     )
 
 class Transaction(models.Model):
+
+    class Meta:
+        db_table = "TRANSACTION"
 
     class TransactionTypeChoices(models.TextChoices):
         BID_PLACED = 'BP' # Bid Placed
@@ -157,16 +163,25 @@ class Transaction(models.Model):
         null=True,
         db_column="offId"
     )
-    payment = models.ForeignKey(
+    payment = models.OneToOneField(
         Payment,
         on_delete=models.CASCADE,
         null=True,
-        db_column="payId"
+        db_column="payId",
+        related_name="transaction"
     )
     admin = models.ForeignKey(
         Admin,
         on_delete=models.CASCADE,
         null=True,
-        db_column="admId"
+        db_column="admId",
+        related_name="transactions"
+    )
+    account = models.ForeignKey(
+        Account,
+        on_delete=models.CASCADE,
+        null = False,
+        db_column="usrId",
+        related_name="transactions"
     )
 

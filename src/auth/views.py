@@ -140,9 +140,6 @@ class RegisterView( APIView ):
                 "status" : "error",
                 "error" : "Invalid form body"
             })
-        print(
-            serializer.errors
-        )
         return Response(status = 400, data = {
             "status" : "error",
             "errors" : serializer.errors

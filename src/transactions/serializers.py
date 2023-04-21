@@ -8,7 +8,7 @@ class AccountSerializer(ModelSerializer):
     class Meta:
         model = Account
         fields = (
-            'id', 'balance', 'frozen')
+            'user', 'balance', 'frozen')
     
 class PaymentSerializer(ModelSerializer):
     class Meta:
@@ -16,13 +16,13 @@ class PaymentSerializer(ModelSerializer):
         fields = (
             'id', 'type', 'timestamp', 'amount', 'receipt', 'flow')
         
-class TransactionSerializer:
+class TransactionSerializer(ModelSerializer):
     class Meta:
         model = Transaction
         fields = (
             'id', 'type', 'description', 'timestamp', 
             'prevBalance', 'postBalance', 'prevFrozen', 
-            'postFrozen', 'flow')
+            'postFrozen', 'flow', 'offer', 'payment', 'admin')
 
     offer = OfferSerializer()
     payment = PaymentSerializer()

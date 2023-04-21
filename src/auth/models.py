@@ -1,8 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.apps import apps
 import numpy as np
 
-class User (AbstractUser):
+class User(AbstractUser):
 
     class Meta:
         db_table = "USER"
@@ -120,8 +121,27 @@ class User (AbstractUser):
             self.reputation = (-1) * (1 / (1 + np.exp( (reports_count - 7) / 3))) + 1
         else:
             self.reputation = 1.0
+    
+    def save(self, *args, **kwargs):
 
-        self.save()
+        # Add acccount only if this is a new user
+        if self._state.adding:
+            self.updateReputation()
+
+            # Save permanently the user before creating the account
+            super(User, self).save(*args, **kwargs)
+
+            # Create automatically an account for this user when it is created
+            self.account = apps.get_model(
+                app_label="transactions",
+                model_name="Account"
+            ).objects.create( 
+                user = self,
+                balance = 0.0,
+                frozen = 0.0
+            )
+        else:
+            super(User, self).save(*args, **kwargs)
 
 class Admin( models.Model ):
 
