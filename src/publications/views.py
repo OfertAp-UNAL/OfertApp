@@ -1,32 +1,88 @@
-from django.contrib.auth import authenticate
-from django.contrib.auth.hashers import make_password
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Count
-from publications.serializers import PublicationSerializer, CategorySerializer, OfferSerializer
+from publications.serializers import PublicationSerializer, CategorySerializer, OfferSerializer, \
+    OfferCreateSerializer, PublicationSupportSerializer, PublicationCreateSerializer
+
 from publications.models import Publication, Category, Offer
+from .services import checkOfferService, checkPublicationService
 
 class PublicationView( APIView ):
     def post( self, request ):
+
+        # Get user from request
+        user = request.user
+
+        # Check if user is authenticated
+        if not user.is_authenticated:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "You must be logged in to perform this action"
+            })
+
+        # Get data from request
+        endDate = request.data.get("endDate", None)
+        priority = request.data.get("priority", None)
+
+        # Get supports for publication
+        supportsData = request.FILES.getlist("supportsFiles")
+
+        # Get supports descriptions for supports
+        supportsDescriptions = request.data.getlist("supportsDescriptions")
+
+        # Get types array for supports
+        supportsTypes = request.data.getlist("supportsTypes")
+
+        # Check additional publication business logic
+        errorResponse = checkPublicationService(
+            user, priority, endDate,
+            supportsData, supportsDescriptions, supportsTypes
+            )
+        if errorResponse is not None:
+            return errorResponse
+
+        # Get data from request
         data = {
             "title" : request.data.get("title"),
             "description" : request.data.get("description"),
             "minOffer" : request.data.get("minOffer"),
-            "endDate" : request.data.get("endDate"),
-            "available" : request.data.get("available"),
-            "reportable" : request.data.get("reportable"),
             "category" : request.data.get("category"),
-            "user" : request.data.get("user"), 
-            "piority": request.data.get("priority"),        
-        }       
+            "user" : user.id,
+        }
 
-        data["supports"] = request.FILES["supports"]
+        if priority is not None:
+            data["priority"] = priority
+        
+        if endDate is not None:
+            data["endDate"] = endDate
 
-        serializer = PublicationSerializer(data=data)
+        serializer = PublicationCreateSerializer(data=data)
 
         if serializer.is_valid():
             
-            serializer.save()
+            # Save publication first
+            publication = serializer.save()
+
+            # For each support, create a support object
+            for i in range(len(supportsData)):
+                supportDescription = supportsDescriptions[i]
+                supportFile = supportsData[i]
+                supportType = supportsTypes[i]
+
+                supportSerializer = PublicationSupportSerializer(data={
+                    "publication" : publication.id,
+                    "description" : supportDescription,
+                    "type" : supportType,
+                    "data" : supportFile
+                })
+
+                if supportSerializer.is_valid():
+                    supportSerializer.save()
+                else:
+                    return Response(status = 200, data = {
+                        "status" : "error",
+                        "errors" : supportSerializer.errors
+                    })
                 
             return Response(status = 200, data = {
                 "status" : "success",
@@ -162,24 +218,99 @@ class CategoryView( APIView ):
         })
     
 class OfferView( APIView ):
-    def post( self, request ):
-        data = {
-            "ammount" : request.data.get("ammount"),
-            "available" : request.data.get("available"),
-            "id" : request.data.get("id"),
-            "user" : request.data.get("user"),
-            "publication" : request.data.get("publication"),
-        }       
+    def post( self, request, publicationId = None ):
+        
+        user = request.user
 
-        serializer = OfferSerializer(data=data)
+        # Check if user is authenticated
+        if user is None:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "You must be logged in to make an offer"
+            })
+        
+        # All offers must belong to a publication
+        if publicationId is None:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "Invalid publication id"
+            })
+        
+        amount = request.data.get("amount")
+
+        # Check if amount have consistency
+        try:
+            amount = float(amount)
+        except ValueError:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "Invalid amount"
+            })
+
+        # Check if publication exists
+        try:
+            publication = Publication.objects.get(id=publicationId)
+        except Publication.DoesNotExist:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "Invalid publication id"
+            })
+
+        # Check offer
+        errorResponse = checkOfferService(user, amount, publication)
+        if errorResponse is not None:
+            return errorResponse
+        
+        # Get last offer made by user
+        data = {
+            "amount" : request.data.get("amount"),
+            "publication" : publicationId,
+            "user" : user.id
+        }
+
+        serializer = OfferCreateSerializer(
+            data = data,
+        )
 
         if serializer.is_valid():
-            serializer.save()          
-            return Response(serializer.data)
+            serializer.save()       
+            return Response(
+                status = 200,
+                data = {
+                    "status" : "success",
+                    "data" : serializer.data
+                }
+            )
         
-        return Response(serializer.errors)
+        return Response(
+            status = 200,
+            data = {
+                "status" : "error",
+                "error" : serializer.errors
+            }
+        )
     
-    def get(self, request):
+    def get(self, request, publicationId = None):
+        if publicationId is not None:
+            try:
+                offers = Offer.objects.filter(
+                    publication = publicationId
+                )
+                return Response(
+                    status=200,
+                    data = {
+                        "status" : "success",
+                        "data" : OfferSerializer(offers, many=True ).data
+                    })
+            
+            except Exception:
+                return Response(
+                    status=200,
+                    data = {
+                        "status" : "error",
+                        "error" : "Invalid publication Id"
+                    })
+        
         offers = Offer.objects.all()
 
         return Response({

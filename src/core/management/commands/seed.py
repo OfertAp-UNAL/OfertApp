@@ -90,7 +90,7 @@ class Command(BaseCommand):
             Publication.objects.create(
                 title = fake.text(max_nb_chars=45),
                 description = fake.text(),
-                minOffer = fake.pydecimal(left_digits=13, right_digits=0, positive=True),
+                minOffer = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
                 endDate = fake.date_time(),
                 available = fake.boolean(),
                 reportable = fake.boolean(),
@@ -177,17 +177,17 @@ class Command(BaseCommand):
         self.stdout.write("Seeding Transactions")
         _ = [
             Transaction.objects.create(
-                amount = fake.pydecimal(left_digits=13, right_digits=0, positive=True),
+                amount = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
                 account = users[i % len(users)].account,
                 offer = offers[
                     fake.random_int(min=0, max=len(offers) - 1)
                 ],
                 type = fake.random_element(elements=('CS', 'BC')),
                 description = fake.text( max_nb_chars=45 ),
-                prevBalance = fake.pydecimal(left_digits=13, right_digits=0, positive=True),
-                postBalance = fake.pydecimal(left_digits=13, right_digits=0, positive=True),
-                prevFrozen = fake.pydecimal(left_digits=13, right_digits=0, positive=True),
-                postFrozen = fake.pydecimal(left_digits=13, right_digits=0, positive=True),
+                prevBalance = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
+                postBalance = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
+                prevFrozen = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
+                postFrozen = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
                 flow = fake.random_element(elements=('I', 'O')),
                 admin = admins[
                     fake.random_int(min=0, max=len(admins) - 1)

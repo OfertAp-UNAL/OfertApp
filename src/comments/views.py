@@ -41,7 +41,7 @@ class CommentView( APIView ):
 
         # Check if user is authenticated
         if not request.user.is_authenticated:
-            return Response(status = 401, data = {
+            return Response(status = 200, data = {
                 "status" : "error",
                 "error" : "You must be logged in to perform this action"
             })
@@ -74,7 +74,7 @@ class ReactionView( APIView ):
         try:
             comment = Comment.objects.get(pk=commentId)
         except Comment.DoesNotExist:
-            return Response(status = 400, data = {
+            return Response(status = 200, data = {
                 "status" : "error",
                 "error" : "Invalid comment id"
             })
@@ -86,9 +86,12 @@ class ReactionView( APIView ):
 
     def post( self, request, commentId ):
         
+        # Get current user
+        user = request.user
+
         # Check if user is authenticated
-        if not request.user.is_authenticated:
-            return Response(status = 401, data = {
+        if not user.is_authenticated:
+            return Response(status = 200, data = {
                 "status" : "error",
                 "error" : "You must be logged in to perform this action"
             })
@@ -96,17 +99,44 @@ class ReactionView( APIView ):
         try:
             comment = Comment.objects.get(pk=commentId)
         except Comment.DoesNotExist:
-            return Response(status = 400, data = {
+            return Response(status = 200, data = {
                 "status" : "error",
                 "error" : "Invalid comment id"
             })
         
+        # Get reaction data
         data = {
             "comment" : comment.id,
-            "user" : request.user.id,
+            "user" : user.id,
             "type" : request.data.get("type")
         }
 
+        # Check if user already reacted to comment
+        commentReactions = comment.reactions.filter(user=request.user)
+        if commentReactions.count() > 0:
+            # Reaction must be updated (or deleted)
+            reaction = commentReactions.first()
+
+            # If reaction type is the same, delete it
+            if data["type"] == reaction.type:
+                reaction.delete()
+                return Response(status = 200, data = {
+                    "status" : "success",
+                    "data" : "Reaction deleted"
+                })
+            
+            # If reaction is different, update it
+            serializer = ReactionSerializer(reaction, data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(status = 200, data = {
+                    "status" : "success",
+                    "data" : serializer.data
+                })
+        
+        # Otherwise, this is a new reaction
+        
+        # Serialize reaction
         serializer = ReactionSerializer(data=data)
         if serializer.is_valid():
             serializer.save()

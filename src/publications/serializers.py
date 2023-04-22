@@ -13,7 +13,14 @@ class OfferSerializer(serializers.ModelSerializer):
         fields = (
             'amount', 'available', 'id', 'user', 'createdAt')
         ordering = 'amount'
-        
+
+class OfferCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Offer
+        fields = (
+            'amount', 'available', 'id', 'publication', 'createdAt', 'user'    
+        )
+    
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -24,8 +31,18 @@ class PublicationSupportSerializer(serializers.ModelSerializer):
     class Meta:
         model = PublicationSupport
         fields = (
-            'id', 'type', 'data', 'description')
+            'id', 'type', 'data', 'description', 'publication')
 
+class PublicationCreateSerializer(serializers.ModelSerializer):
+    endDate = serializers.DateTimeField(required=False)
+    priority = serializers.BooleanField(required=False)
+
+    class Meta:
+        model = Publication
+        fields = (
+            'title', 'description', 'minOffer', 'endDate', 'category',
+            'user', 'priority', 'user')
+        
 class PublicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Publication

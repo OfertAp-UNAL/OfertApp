@@ -2,6 +2,7 @@ from django.db import models
 from auth.models import User
 import uuid
 import numpy as np
+import datetime
 
 class Category(models.Model):
     class Meta:
@@ -90,7 +91,8 @@ class Publication(models.Model):
     )
     endDate = models.DateTimeField(
         null=False,
-        db_column="pubEndDate"
+        db_column="pubEndDate",
+        default=datetime.datetime.today() + datetime.timedelta(days=1)
     )
     available = models.BooleanField(
         default=True, null=False,
