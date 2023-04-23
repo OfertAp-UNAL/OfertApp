@@ -1,10 +1,11 @@
 from rest_framework.views import APIView, Response
 from .services import MunicipalityService
-from django.core import serializers
+from django.db.models import Sum, Count, F
+from django.db.models.functions import TruncDay, TruncWeek, TruncMonth, TruncYear
 from transactions.models import Account, Transaction
 from comments.models import Comment, Reaction
 from publications.models import Publication, Offer
-from .serializers import OfferStatsSerializer, ReactionStatsSerializer, TransactionStatsSerializer
+from datetime import datetime, timedelta
 
 service = MunicipalityService()
 
@@ -36,7 +37,15 @@ class DepartmentsView( APIView ):
 class StatisticView( APIView ):
     
     def get(self, request):
-        # Get user's statistics
+
+        # Get given filtering and grouping params:
+        groupFinancialBy = self.request.query_params.get("groupFinancialBy", "day")
+        viewFinancialBy = self.request.query_params.get("viewFinancialBy", "money")
+
+        viewReactionsBy = self.request.query_params.get("viewReactionsBy", "lday")
+
+        viewOffersBy = self.request.query_params.get("viewOffersBy", "money")
+        viewLastOffersIn = self.request.query_params.get("viewLastOffersIn", "5")
         
         # First check if user is authenticated
         user = request.user
@@ -52,9 +61,86 @@ class StatisticView( APIView ):
             comments = Comment.objects.filter( user=user )
             reactions = Reaction.objects.filter( comment__in = comments )
 
+            # Finally, apply filters and return the data
+
+            # Filter for sales and purchases
+            if( groupFinancialBy not in ["day", "week", "month", "year"] ):
+                groupFinancialBy = "day"
+            if( viewFinancialBy not in ["money", "count"] ):
+                viewFinancialBy = "money"
+            
+            # Group purchases by given parameter and given statistical measure
+            def getTimeFilterInfo():
+                if groupFinancialBy == "day":
+                    return [{"day": TruncDay("timestamp")}, "day"]
+                if groupFinancialBy == "week":
+                    return [{"week": TruncWeek("timestamp")}, "week"]
+                if groupFinancialBy == "month":
+                    return [{"month": TruncMonth("timestamp")}, "month"]
+                if groupFinancialBy == "year":
+                    return [{"year": TruncYear("timestamp")}, "year"]
+                else:
+                    return [{"day": TruncDay("timestamp")}, "day"]
+            
+            # Get groupping info fields
+            groupDict, groupField = getTimeFilterInfo()
+            sales = sales.annotate(
+                **groupDict,
+            ).values( groupField ).annotate(
+                total = Sum("amount") if viewFinancialBy == "money" else Count("id")
+            )
+
+            purchases = purchases.annotate(
+                **groupDict,
+            ).values( groupField ).annotate(
+                total = Sum("amount") if viewFinancialBy == "money" else Count("id")
+            )
+            # Filter for reactions
+            if( viewReactionsBy not in ["lday", "lweek", "lmonth", "lyear"] ):
+                viewReactionsBy = "lday"
+            
+            # Filter by last day, week, month or year, then group by type and count
+
+            def getTimeDelta( ):
+                if viewReactionsBy == "lday":
+                    return timedelta(days=1)
+                if viewReactionsBy == "lweek":
+                    return timedelta(weeks=1)
+                if viewReactionsBy == "lmonth":
+                    return timedelta(days=30)
+                if viewReactionsBy == "lyear":
+                    return timedelta(days=365)
+                else:
+                    return timedelta(days=1)
+            
+            reactions = reactions.filter(
+                createdAt__gte = datetime.now() - getTimeDelta( )
+            ).values( "type" ).annotate( total = Count("id") )
+
+            # Filter for offers
+            if not viewOffersBy in ["money", "count"]:
+                viewOffersBy = "money"
+            if not viewLastOffersIn in ["5", "10", "20"]:
+                viewLastOffersIn = "5"
+            
+            # Filter by last offers within last n publication, then group by publication and count
+            sliceLimit = min(user.publications.count(), int(viewLastOffersIn))
+
             # Get offers made by other users to this user's publications
-            publications = Publication.objects.filter( user=user )
-            offers = Offer.objects.filter( publication__in = publications )
+            publications_ids = list(Publication.objects.filter( user=user ).\
+                order_by("-createdAt")[:sliceLimit].values_list("id", flat=True))
+
+            offers = Offer.objects.filter( 
+                publication__in = publications_ids
+            ).values( 
+                "publication", "publication__title" 
+            ).annotate(
+                total = Sum("amount") if viewOffersBy == "money" else Count("id")
+            ).annotate(
+                publicationTitle = F("publication__title")
+            ).values(
+                "publication", "publicationTitle", "total"
+            )
 
             return Response(
                 status = 200,
@@ -63,10 +149,10 @@ class StatisticView( APIView ):
                     "data": {
                         "balance" : account.balance,
                         "frozenBalance" : account.frozen,
-                        "sales": TransactionStatsSerializer(sales, many=True).data,
-                        "purchases": TransactionStatsSerializer(purchases, many=True).data,
-                        "reactions": ReactionStatsSerializer(reactions, many=True).data,
-                        "offers": OfferStatsSerializer(offers, many=True).data
+                        "sales": sales,
+                        "purchases": purchases,
+                        "reactions": reactions,
+                        "offers": offers
                     }
                 }
             )

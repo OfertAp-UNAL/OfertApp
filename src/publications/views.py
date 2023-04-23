@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from django.db.models import Count
 from publications.serializers import PublicationSerializer, CategorySerializer, OfferSerializer, \
     OfferCreateSerializer, PublicationSupportSerializer, PublicationCreateSerializer
+from transactions.services import placeBid, revokeBid
 
 from publications.models import Publication, Category, Offer
 from .services import checkOfferService, checkPublicationService
@@ -273,7 +274,40 @@ class OfferView( APIView ):
         )
 
         if serializer.is_valid():
-            serializer.save()       
+
+            # All checks were passed
+            offer = serializer.save()
+
+            # Freeze money for this offer
+            placeBid(offer,
+                "Pusiste una oferta sobre la publicación " +
+                publication.title + " de " + publication.user.username +
+                " por $" + str(offer.amount) + "."
+            )
+
+            # Disable previous higher offer, if any
+            availableOffers = Offer.objects.filter(
+                publication = publication,
+                available = True
+            ).exclude(
+                # Exclude myself, ofc
+                id = offer.id
+            )
+
+            # Disable offers that are not higher than this one anymore
+            for availableOffer in availableOffers:
+                availableOffer.available = False
+                availableOffer.save()
+
+                # Unfreeze money for this offer
+                revokeBid(availableOffer, 
+                    user.username + " puso una oferta mayor en la publicación " +
+                    publication.title + " de " + publication.user.username +
+                    " por $" + str(offer.amount) + "."
+                )
+        
+            # Create a transaction: Freeze needed money for this offer
+
             return Response(
                 status = 200,
                 data = {

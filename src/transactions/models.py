@@ -112,7 +112,7 @@ class Transaction(models.Model):
         choices=TransactionTypeChoices.choices
     )
     description = models.CharField(
-        max_length=45,
+        max_length=255,
         null=True,
         db_column="tranDescription",
     )

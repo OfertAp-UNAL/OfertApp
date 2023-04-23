@@ -154,10 +154,20 @@ class Command(BaseCommand):
                 publication = publications[
                     i % number
                 ],
-                available = fake.boolean()
+                available = False
             )
             for i in range(number*10)
         ]
+
+        # Update highest offers on each publication and set them as available
+        for publication in publications:
+            highestOffer = Offer.objects.filter(
+                publication = publication
+            ).order_by('-amount').first()
+
+            if highestOffer:
+                highestOffer.available = True
+                highestOffer.save()
 
         self.stdout.write("Seeding PublicationSupports")
         _ = [

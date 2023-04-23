@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(db_column='tranId', default=uuid.uuid4, primary_key=True, serialize=False)),
                 ('type', models.CharField(choices=[('BP', 'Bid Placed'), ('CS', 'Cost Per Sale'), ('BC', 'Bid Revoked'), ('AR', 'Account Recharge'), ('AW', 'Account Withdrawal'), ('AA', 'Admin Adjustment'), ('OT', 'Other')], db_column='tranType', max_length=2)),
-                ('description', models.CharField(db_column='tranDescription', max_length=45, null=True)),
+                ('description', models.CharField(db_column='tranDescription', max_length=255, null=True)),
                 ('timestamp', models.DateTimeField(auto_now_add=True, db_column='tranTimestamp')),
                 ('amount', models.DecimalField(db_column='tranAmount', decimal_places=0, max_digits=13)),
                 ('prevBalance', models.DecimalField(db_column='tranPrevBalance', decimal_places=0, max_digits=13)),

@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from .models import Offer
+from transactions.models import Transaction
 import datetime
 
 def checkOfferService(user, amount, publication):
@@ -102,8 +103,3 @@ def checkPublicationService(
             "status" : "error",
             "error" : "At least one support is required"
         })
-
-    
-
-    
-
