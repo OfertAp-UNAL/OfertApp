@@ -7,4 +7,7 @@ class CustomTokenPairSerializer( TokenObtainPairSerializer ):
     
         token["username"] = user.username
         token["email"] = user.email
+        token["vipState"] = user.vipState
+        token["vipPubCount"] = user.vipPubCount
+
         return token

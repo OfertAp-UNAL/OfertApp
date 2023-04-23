@@ -66,7 +66,7 @@ class PublicationSerializer(serializers.ModelSerializer):
 
     def get_comments(self, publication):
         comments = publication.comments.all().order_by('-createdAt')
-        return PublicationCommentSerializer(comments, many=True).data
+        return PublicationCommentSerializer(comments, context = self.context, many=True).data
 
     def get_offers(self, publication):
         offers = publication.offers.all().order_by('-amount')

@@ -1,12 +1,12 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Comment
-from .serializers import PublicationCommentSerializer, CommentSerializer, ReactionSerializer
+from .serializers import PublicationCommentSerializer, CommentSerializer, ReactionCreateSerializer, ReactionSerializer
 from publications.models import Publication
 
 class CommentView( APIView ):
 
-    def get(self, _, publicationId, commentId = None):
+    def get(self, request, publicationId, commentId = None):
 
         try:
             publication = Publication.objects.get(pk=publicationId)
@@ -22,7 +22,9 @@ class CommentView( APIView ):
 
                 return Response(status = 200, data = {
                     "status" : "success",
-                    "data" : PublicationCommentSerializer(comment).data
+                    "data" : PublicationCommentSerializer(comment, context = {
+                        "request" : request
+                    }).data
                 })
             except Comment.DoesNotExist:
                 return Response(status = 400, data = {
@@ -34,7 +36,9 @@ class CommentView( APIView ):
         comments = publication.comments.all()
         return Response(status = 200, data = {
             "status" : "success",
-            "data" : PublicationCommentSerializer(comments, many=True).data
+            "data" : PublicationCommentSerializer(comments, context = {
+                        "request" : request
+                    }, many=True).data
         })
         
     def post(self, request, publicationId, commentId = None ):
@@ -69,7 +73,7 @@ class CommentView( APIView ):
 
 class ReactionView( APIView ):
 
-    def get( self, _, commentId ):
+    def get( self, request, commentId ):
             
         try:
             comment = Comment.objects.get(pk=commentId)
@@ -81,7 +85,9 @@ class ReactionView( APIView ):
         
         return Response(status = 200, data = {
             "status" : "success",
-            "data" : ReactionSerializer(comment.reactions.all(), many=True).data
+            "data" : ReactionSerializer(comment.reactions.all(), context = {
+                        "request" : request
+                    }, many=True).data
         })
 
     def post( self, request, commentId ):
@@ -126,7 +132,7 @@ class ReactionView( APIView ):
                 })
             
             # If reaction is different, update it
-            serializer = ReactionSerializer(reaction, data=data)
+            serializer = ReactionCreateSerializer(reaction, data=data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(status = 200, data = {
@@ -137,7 +143,7 @@ class ReactionView( APIView ):
         # Otherwise, this is a new reaction
         
         # Serialize reaction
-        serializer = ReactionSerializer(data=data)
+        serializer = ReactionCreateSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(status = 200, data = {

@@ -95,13 +95,16 @@ class PublicationView( APIView ):
             "errors" : serializer.errors
         })
     
-    def get(self, _, publicationId = None):
+    def get(self, request, publicationId = None):
         if publicationId is not None:
             try:
                 publication = Publication.objects.get(pk=publicationId)
+                data = PublicationSerializer(publication, context = {
+                        "request" : request
+                    }).data
                 return Response(status = 200, data = {
                     "status" : "success",
-                    "data" : PublicationSerializer(publication).data
+                    "data" : data
                 })
             except Publication.DoesNotExist:
                 return Response(status = 400, data = {

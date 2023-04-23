@@ -7,10 +7,21 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = '__all__'
 
-class ReactionSerializer(serializers.ModelSerializer):
+class ReactionCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reaction
         fields = '__all__'
+
+class ReactionSerializer(serializers.ModelSerializer):
+    isLoggedUser = serializers.SerializerMethodField(
+        method_name="isLoggedUserReaction"
+    )
+    class Meta:
+        model = Reaction
+        fields = '__all__'
+    
+    def isLoggedUserReaction(self, reaction):
+        return reaction.user == self.context['request'].user
 
 class PublicationCommentSerializer(serializers.ModelSerializer):
 
@@ -26,11 +37,26 @@ class PublicationCommentSerializer(serializers.ModelSerializer):
         method_name="countReactions"
     )
     def countReactions(self, comment):
-        return {
+        toReturn = {
             "LIKE" : comment.reactions.filter(type="LIKE").count(),
             "DISLIKE" : comment.reactions.filter(type="DISLIKE").count(),
             "WARNING" : comment.reactions.filter(type="WARNING").count()
         }
+        # Get user from context
+        user = None
+        request = self.context.get('request', None)
+        if request is not None:
+            user = request.user
+
+        # Check if user is authenticated
+        if user and user.is_authenticated:
+            # Add a field to recognize if user has reacted to this comment, 
+            # and what type of reaction did he use
+            userReaction = comment.reactions.filter(user=user)
+            if userReaction and userReaction.count() > 0:
+                toReturn["userReaction"] = userReaction.first().type
+            
+        return toReturn
 
     class Meta:
         model = Comment
