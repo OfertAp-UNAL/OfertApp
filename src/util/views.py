@@ -1,7 +1,8 @@
 from rest_framework.views import APIView, Response
 from .services import MunicipalityService
-from django.db.models import Sum, Count, F
-from django.db.models.functions import TruncDay, TruncWeek, TruncMonth, TruncYear
+from django.db.models import Sum, Count, F, Value, Case, When
+from django.db.models import DecimalField
+from django.db.models.functions import TruncDay, TruncWeek, TruncMonth, TruncYear, Coalesce
 from transactions.models import Account, Transaction
 from comments.models import Comment, Reaction
 from publications.models import Publication, Offer
@@ -41,7 +42,6 @@ class StatisticView( APIView ):
         # Get given filtering and grouping params:
         groupFinancialBy = self.request.query_params.get("groupFinancialBy", "day")
         viewFinancialBy = self.request.query_params.get("viewFinancialBy", "money")
-
         viewReactionsBy = self.request.query_params.get("viewReactionsBy", "lday")
 
         viewOffersBy = self.request.query_params.get("viewOffersBy", "money")
@@ -54,8 +54,7 @@ class StatisticView( APIView ):
             transactions = Transaction.objects.filter( account=account )
 
             # Count the number of transactions which mean sales and purchases
-            sales = transactions.filter( type__in = ["CS"]  )
-            purchases = transactions.filter( type__in = ["BP"] )
+            salesAndPurchases = transactions.filter( type__in = ["CS","BP"]  )
 
             # Get reactions to this user's comments
             comments = Comment.objects.filter( user=user )
@@ -66,7 +65,7 @@ class StatisticView( APIView ):
             # Filter for sales and purchases
             if( groupFinancialBy not in ["day", "week", "month", "year"] ):
                 groupFinancialBy = "day"
-            if( viewFinancialBy not in ["money", "count"] ):
+            if( viewFinancialBy not in ["money", "quantity"] ):
                 viewFinancialBy = "money"
             
             # Group purchases by given parameter and given statistical measure
@@ -84,17 +83,26 @@ class StatisticView( APIView ):
             
             # Get groupping info fields
             groupDict, groupField = getTimeFilterInfo()
-            sales = sales.annotate(
+
+            salesAndPurchases = salesAndPurchases.annotate(
                 **groupDict,
             ).values( groupField ).annotate(
-                total = Sum("amount") if viewFinancialBy == "money" else Count("id")
+                sales = Sum(
+                    Case(
+                        When( type="CS", then= "amount" if viewFinancialBy == "money" else 1 ),
+                        default=0,
+                        output_field=DecimalField()
+                    )
+                ),
+                purchases = Sum(
+                    Case(
+                        When( type="BP", then= "amount" if viewFinancialBy == "money" else 1 ),
+                        default=0,
+                        output_field=DecimalField()
+                    )
+                )
             )
 
-            purchases = purchases.annotate(
-                **groupDict,
-            ).values( groupField ).annotate(
-                total = Sum("amount") if viewFinancialBy == "money" else Count("id")
-            )
             # Filter for reactions
             if( viewReactionsBy not in ["lday", "lweek", "lmonth", "lyear"] ):
                 viewReactionsBy = "lday"
@@ -115,10 +123,13 @@ class StatisticView( APIView ):
             
             reactions = reactions.filter(
                 createdAt__gte = datetime.now() - getTimeDelta( )
-            ).values( "type" ).annotate( total = Count("id") )
+            ).values( "type" ).annotate( total = Coalesce(
+                Count("id"), Value(0),
+                output_field=DecimalField()
+            ))
 
             # Filter for offers
-            if not viewOffersBy in ["money", "count"]:
+            if not viewOffersBy in ["money", "quantity"]:
                 viewOffersBy = "money"
             if not viewLastOffersIn in ["5", "10", "20"]:
                 viewLastOffersIn = "5"
@@ -130,16 +141,20 @@ class StatisticView( APIView ):
             publications_ids = list(Publication.objects.filter( user=user ).\
                 order_by("-createdAt")[:sliceLimit].values_list("id", flat=True))
 
-            offers = Offer.objects.filter( 
-                publication__in = publications_ids
-            ).values( 
-                "publication", "publication__title" 
-            ).annotate(
-                total = Sum("amount") if viewOffersBy == "money" else Count("id")
-            ).annotate(
-                publicationTitle = F("publication__title")
+            offers = Publication.objects.filter(
+                id__in = publications_ids
             ).values(
-                "publication", "publicationTitle", "total"
+                "id", "title"
+            ).annotate(
+                total = Coalesce(
+                    Sum("offers__amount") if viewOffersBy == "money" else Count("offers__id"),
+                    Value(0),
+                    output_field=DecimalField()
+                )
+            ).annotate(
+                publicationTitle = F("title")
+            ).values(
+                "id", "publicationTitle", "total"
             )
 
             return Response(
@@ -149,8 +164,7 @@ class StatisticView( APIView ):
                     "data": {
                         "balance" : account.balance,
                         "frozenBalance" : account.frozen,
-                        "sales": sales,
-                        "purchases": purchases,
+                        "salesPurchases": salesAndPurchases,
                         "reactions": reactions,
                         "offers": offers
                     }
