@@ -11,7 +11,7 @@ class OfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = Offer
         fields = (
-            'amount', 'available', 'id', 'user', 'createdAt')
+            'amount', 'available', 'id', 'user', 'createdAt', 'publication')
         ordering = 'amount'
 
 class OfferCreateSerializer(serializers.ModelSerializer):

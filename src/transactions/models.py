@@ -70,7 +70,8 @@ class Payment(models.Model):
     receipt = models.FileField(
         upload_to="receipts/",
         null=False,
-        db_column="payReceipt"
+        db_column="payReceipt",
+        default="defaultReceipt.pdf"
     )
     flow = models.CharField(
         max_length=1,

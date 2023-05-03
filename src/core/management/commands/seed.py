@@ -182,9 +182,19 @@ class Command(BaseCommand):
             for _ in range(number*10)
         ]
 
+        # Seed payments
+        self.stdout.write("Seeding Payments")
+        payments = [
+            Payment.objects.create(
+                type = fake.random_element(elements=('NQ', 'PP')),
+                amount = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
+                flow = fake.random_element(elements=('I', 'O'))
+            )
+            for _ in range(number*10)
+        ]
         # Seed transactions also
 
-        self.stdout.write("Seeding Transactions")
+        self.stdout.write("Seeding Transactions (Related to offers)")
         _ = [
             Transaction.objects.create(
                 amount = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
@@ -198,10 +208,43 @@ class Command(BaseCommand):
                 postBalance = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
                 prevFrozen = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
                 postFrozen = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
+                flow = fake.random_element(elements=('I', 'O'))
+            )
+            for i in range(number*5)
+        ]
+
+        self.stdout.write("Seeding Transactions (Related to payments)")
+        _ = [
+            Transaction.objects.create(
+                amount = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
+                account = users[i % len(users)].account,
+                payment = payments[i],
+                type = fake.random_element(elements=('CS', 'BC')),
+                description = fake.text( max_nb_chars=45 ),
+                prevBalance = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
+                postBalance = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
+                prevFrozen = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
+                postFrozen = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
+                flow = fake.random_element(elements=('I', 'O'))
+            )
+            for i in range(number*10)
+        ]
+
+        self.stdout.write("Seeding Transactions (Related to admins)")
+        _ = [
+            Transaction.objects.create(
+                amount = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
+                account = users[i % len(users)].account,
+                type = fake.random_element(elements=('CS', 'BC')),
+                description = fake.text( max_nb_chars=45 ),
+                prevBalance = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
+                postBalance = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
+                prevFrozen = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
+                postFrozen = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
                 flow = fake.random_element(elements=('I', 'O')),
                 admin = admins[
                     fake.random_int(min=0, max=len(admins) - 1)
                 ]
             )
-            for i in range(number*10)
+            for i in range(number*5)
         ]
