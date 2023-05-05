@@ -41,7 +41,7 @@ class Command(BaseCommand):
                 f"Credentials for user {username}, {email} : [{password}]"
             )
 
-            return User.objects.create(
+            user = User.objects.create(
                 id = i,
                 firstName = fake.first_name(),
                 lastName = fake.last_name(),
@@ -61,6 +61,10 @@ class Command(BaseCommand):
                 vipState = fake.random_element(elements=(True, False)),
                 vipPubCount = fake.random_int(min=0, max=10)
             )
+
+            # Update user's balance
+            user.account.balance = fake.pydecimal(left_digits=13, right_digits=0, positive=True)
+            user.account.save()
         
         users = [
             generate_user(i)
@@ -147,7 +151,7 @@ class Command(BaseCommand):
         self.stdout.write("Seeding Offers (10 per Publication)")
         offers = [
             Offer.objects.create(
-                amount = fake.pydecimal(left_digits=13, right_digits=0, positive=True),
+                amount = fake.pydecimal(left_digits=5, right_digits=0, positive=True),
                 user = users[
                     fake.random_int(min=0, max=len(users) - 1)
                 ],
