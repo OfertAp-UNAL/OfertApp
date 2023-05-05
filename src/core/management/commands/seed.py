@@ -65,6 +65,8 @@ class Command(BaseCommand):
             # Update user's balance
             user.account.balance = fake.pydecimal(left_digits=13, right_digits=0, positive=True)
             user.account.save()
+
+            return user
         
         users = [
             generate_user(i)
