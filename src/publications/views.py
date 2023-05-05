@@ -90,7 +90,7 @@ class PublicationView( APIView ):
                 "data" : serializer.data
             })
         
-        return Response(status = 400, data = {
+        return Response(status = 200, data = {
             "status" : "error", 
             "errors" : serializer.errors
         })
@@ -107,7 +107,7 @@ class PublicationView( APIView ):
                     "data" : data
                 })
             except Publication.DoesNotExist:
-                return Response(status = 400, data = {
+                return Response(status = 200, data = {
                     "status" : "error",
                     "error" : "Invalid publication id"
                 })
@@ -208,7 +208,7 @@ class CategoryView( APIView ):
                 "data" : serializer.data
             })
         
-        return Response(status = 400, data = {
+        return Response(status = 200, data = {
             "status": "error",
             "errors" : serializer.errors
         })
