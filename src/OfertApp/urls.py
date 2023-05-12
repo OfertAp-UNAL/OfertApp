@@ -23,6 +23,7 @@ import publications.urls as publicationsUrls
 import comments.urls as commentsUrls
 import util.urls as utilUrls
 import transactions.urls as transactionsUrls
+import core.urls as coreUrls
 
 
 apiUrl = 'api/v1/'
@@ -34,6 +35,7 @@ urlpatterns = [
     path(apiUrl, include( commentsUrls)),
     path(apiUrl, include( utilUrls)),
     path(apiUrl, include( transactionsUrls)),
+    path(apiUrl, include( coreUrls)),
 ]
 
 if settings.DEBUG:

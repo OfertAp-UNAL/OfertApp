@@ -206,6 +206,12 @@ EMAIL_VERIFICATION_URL_ENDPOINT = env("EMAIL_VERIFICATION_URL_ENDPOINT")
 # Get password recovery endpoint
 EMAIL_PASSWORD_RESET_URL_ENDPOINT = env("EMAIL_PASSWORD_RESET_URL_ENDPOINT")
 
+# PayPal data
+PP_CLIENT_ID = env("PP_CLIENT_ID")
+PP_SECRET = env("PP_SECRET")
+PP_SANDBOX_EMAIL = env("PP_SANDBOX_EMAIL")
+PP_API_BASE_URL = env("PP_API_BASE_URL")
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 

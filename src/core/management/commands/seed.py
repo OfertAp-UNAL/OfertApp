@@ -2,7 +2,7 @@ from faker import Faker
 from auth.models import User, Admin
 from publications.models import Publication, Category, Offer, PublicationSupport
 from comments.models import Comment, Reaction
-from transactions.models import Transaction, Payment, Account
+from transactions.models import Transaction, Payment
 from django.core.management.base import BaseCommand
 from django.contrib.auth.hashers import make_password
     

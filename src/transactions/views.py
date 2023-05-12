@@ -24,3 +24,8 @@ class TransactionView( APIView ):
                 "error": "User not authenticated"
             }
         )
+
+class PaymentView( APIView ):
+    def post(self, request ):
+        # This is a callback sent by PayPal when a payment is made
+        pass
