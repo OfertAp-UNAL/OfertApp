@@ -30,7 +30,7 @@ class LoginView( APIView ):
             )
         except Exception as e:
             print(e)
-            return Response(status = 401, data = {
+            return Response(status = 200, data = {
                 "status" : "error",
                 "error" : "Invalid credentials"
             })
@@ -40,7 +40,7 @@ class LoginView( APIView ):
 
             # Check if the user is blocked
             if user.blocked:
-                return Response(status = 401, data = {
+                return Response(status = 200, data = {
                     "status" : "error",
                     "error" : "Your account has been blocked"
                 })
@@ -61,7 +61,7 @@ class LoginView( APIView ):
                 # Force the user to verify his Email
                 #accountService.sendVerificationEmail(user)
 
-                return Response(status = 401, data = {
+                return Response(status = 200, data = {
                     "status" : "error",
                     "error" : "Please verify your account by checking your email"
                 })
@@ -118,7 +118,7 @@ class RegisterView( APIView ):
             
             # Verify user's identity
             if not accountService.checkAccount(data):
-                return Response(status = 400, data = {
+                return Response(status = 200, data = {
                     "status" : "error",
                     "error" : "Invalid identity"
                 })
@@ -136,13 +136,13 @@ class RegisterView( APIView ):
                     "token" : str(refresh.access_token),
                 })
             
-            return Response(status = 400, data = {
+            return Response(status = 200, data = {
                 "status" : "error",
                 "error" : "Invalid form body"
             })
-        return Response(status = 400, data = {
+        return Response(status = 200, data = {
             "status" : "error",
-            "errors" : serializer.errors
+            "error" : serializer.errors
         })
 
 class UserInfoView( APIView ):
@@ -154,7 +154,7 @@ class UserInfoView( APIView ):
                 "data" : UserSerializer(user).data
             })
         
-        return Response(status = 401, data = {
+        return Response(status = 200, data = {
             "status" : "error",
             "error" : "You aren't logged in"
         })
@@ -202,17 +202,17 @@ class UserInfoView( APIView ):
                         "data" : UserSerializer(user).data
                     })
                 
-                return Response(status = 400, data = {
+                return Response(status = 200, data = {
                     "status" : "error",
                     "error" : "Invalid form body"
                 })
             
-            return Response(status = 400, data = {
+            return Response(status = 200, data = {
                 "status" : "error",
-                "errors" : serializer.errors
+                "error" : serializer.errors
             })
         
-        return Response(status = 401, data = {
+        return Response(status = 200, data = {
             "status" : "error",
             "error" : "You aren't logged in"
         })
@@ -220,7 +220,7 @@ class UserInfoView( APIView ):
 class VerifyView( APIView ):
     def get(self, _, token = None, user64_id = None ):
         if token is None or user64_id is None:
-            return Response(status = 400, data = {
+            return Response(status = 200, data = {
                 "status" : "error",
                 "error" : "Invalid request, include /token/user64_id/"
             })
@@ -229,7 +229,7 @@ class VerifyView( APIView ):
             user_id = urlsafe_base64_decode(user64_id).decode()
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
-            return Response(status = 400, data = {
+            return Response(status = 200, data = {
                 "status" : "error",
                 "error" : "Invalid token"
             })
@@ -245,7 +245,7 @@ class VerifyView( APIView ):
                 "message" : "Email verified"
             })
         
-        return Response(status = 400, data = {
+        return Response(status = 200, data = {
             "status" : "error",
             "error" : "Invalid token"
         })
@@ -261,7 +261,7 @@ class PasswordResetView( APIView ):
             # Its a request to send a password reset email
             email = request.data.get("email")
             if email is None:
-                return Response(status = 400, data = {
+                return Response(status = 200, data = {
                     "status" : "error",
                     "error" : "Invalid request, include /email/"
                 })
@@ -269,14 +269,14 @@ class PasswordResetView( APIView ):
             try:
                 user = User.objects.get(email=email)
             except User.DoesNotExist:
-                return Response(status = 400, data = {
+                return Response(status = 200, data = {
                     "status" : "error",
                     "error" : "Email doesn't exist"
                 })
 
             # Check if user is verified
             if not user.verified:
-                return Response(status = 400, data = {
+                return Response(status = 200, data = {
                     "status" : "error",
                     "error" : "Email isn't verified"
                 })
@@ -295,7 +295,7 @@ class PasswordResetView( APIView ):
                 user_id = urlsafe_base64_decode(user64_id).decode()
                 user = User.objects.get(id=user_id)
             except User.DoesNotExist:
-                return Response(status = 400, data = {
+                return Response(status = 200, data = {
                     "status" : "error",
                     "error" : "Invalid token"
                 })
@@ -309,12 +309,12 @@ class PasswordResetView( APIView ):
                     "message" : "Password changed"
                 })
 
-            return Response(status = 400, data = {
+            return Response(status = 200, data = {
                 "status" : "error",
                 "error" : "Invalid token"
             })
         
-        return Response(status = 400, data = {
+        return Response(status = 200, data = {
             "status" : "error",
             "error" : "Invalid request, include /email/ or /token/user64_id/password/"
         })

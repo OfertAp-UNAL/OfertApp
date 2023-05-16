@@ -125,8 +125,8 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
 
         # Add acccount only if this is a new user
+        self.updateReputation()
         if self._state.adding:
-            self.updateReputation()
 
             # Save permanently the user before creating the account
             super(User, self).save(*args, **kwargs)

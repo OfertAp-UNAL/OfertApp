@@ -10,7 +10,7 @@ class SettingsView( APIView ):
                 data = {
                     "status": "success",
                     "data": {
-                        "PPClientID" : settings.PP_CLIENT_ID
+                        "MP_PUBLIC_KEY" : settings.MP_PUBLIC_KEY,
                     }
                 }
             )

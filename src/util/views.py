@@ -1,5 +1,5 @@
 from rest_framework.views import APIView, Response
-from .services import MunicipalityService
+from .services import MunicipalityService, CurrencyTranslationService
 from django.db.models import Sum, Count, F, Value, Case, When
 from django.db.models import DecimalField
 from django.db.models.functions import TruncDay, TruncWeek, TruncMonth, TruncYear, Coalesce
@@ -178,3 +178,30 @@ class StatisticView( APIView ):
                 "error": "User not authenticated"
             }
         )
+    
+class CurrencyTranslationView( APIView ):
+
+    # currencyService = CurrencyTranslationService()
+
+    def get(self, _, copValue):
+        if copValue is None:
+            return Response(
+                status = 200,
+                data = {
+                    "status": "error",
+                    "error": "Currency not specified"
+                }
+            )
+        else:
+            return Response(
+                status = 200,
+                data = {
+                    "status": "success",
+                    "data": {
+                        "copValue": copValue,
+                        "usdValue":  0 #self.currencyService.convert(copValue)
+                    }
+                }
+            )
+
+    

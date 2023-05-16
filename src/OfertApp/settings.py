@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'transactions.apps.TransactionsConfig',
     'util.apps.UtilConfig',
     'core.apps.CoreConfig',
+    'payments.apps.PaymentsConfig',
     "rest_framework",
     "corsheaders",
     "django_seed"
@@ -211,6 +212,11 @@ PP_CLIENT_ID = env("PP_CLIENT_ID")
 PP_SECRET = env("PP_SECRET")
 PP_SANDBOX_EMAIL = env("PP_SANDBOX_EMAIL")
 PP_API_BASE_URL = env("PP_API_BASE_URL")
+
+# Currency translation data 
+MP_BASE_URL = env("MP_BASE_URL")
+MP_ACCESS_TOKEN = env("MP_ACCESS_TOKEN")
+MP_PUBLIC_KEY = env("MP_PUBLIC_KEY")
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

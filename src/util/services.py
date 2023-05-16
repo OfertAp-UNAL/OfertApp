@@ -106,3 +106,36 @@ class MunicipalityService():
             "c_digo_dane_del_municipio": id
         })
         return self.friendlyResponse(request, many = False)
+
+class CurrencyTranslationService():
+
+    def __init__(self):
+        self.url = settings.CURRENCY_URL
+        self.init()
+    
+    def init(self, target = "COP" ):
+        request = requests.Request(
+            'GET', self.url, 
+            params = {
+                "apikey" : settings.CURRENCY_API_KEY,
+                "currencies" : "USD",
+                "base_currency" : target
+            }
+        )
+
+        try:
+            response = requests.Session().send(request.prepare())
+
+            if( response.status_code != 200 ):
+                self.copReference = 0
+                return
+            
+            json = response.json()
+            self.copReference = json["data"]["USD"]["value"]
+        except requests.exceptions.RequestException as e:
+            self.copReference = 0
+    
+    def convert(self, value):
+        # Value comes in COP units
+        return self.copReference * value
+

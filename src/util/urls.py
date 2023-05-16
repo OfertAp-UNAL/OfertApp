@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import MunicipalityView, DepartmentsView, StatisticView
+from .views import MunicipalityView, DepartmentsView, StatisticView, CurrencyTranslationView
 
 urlpatterns = [
     path( "municipalities/", MunicipalityView.as_view() ),
@@ -8,4 +8,5 @@ urlpatterns = [
     
     # Statistical info of user's actions in the app
     path( "statistics/", StatisticView.as_view() ),
+    path( "conversion/<int:copValue>/", CurrencyTranslationView.as_view() )
 ]
