@@ -193,12 +193,6 @@ EMAIL_USE_TLS = True
 # Tokens default expiration time
 PASSWORD_RESET_TIMEOUT = 7200 # 2 Hours
 
-# MasterCard data
-MC_API_BASE_URL= env("MC_API_BASE_URL")
-MC_PRIVATE_KEY_PATH = env("MC_PRIVATE_KEY_PATH")
-MC_CARD_KEY_PASSWORD = env("MC_CARD_KEY_PASSWORD")
-MC_CONSUMER_KEY = env("MC_CONSUMER_KEY")
-
 # Municipality service
 MUNICIPALITY_SERVICE_URL = "https://www.datos.gov.co/resource/xdk5-pm3f.json"
 
@@ -207,12 +201,6 @@ EMAIL_VERIFICATION_URL_ENDPOINT = env("EMAIL_VERIFICATION_URL_ENDPOINT")
 
 # Get password recovery endpoint
 EMAIL_PASSWORD_RESET_URL_ENDPOINT = env("EMAIL_PASSWORD_RESET_URL_ENDPOINT")
-
-# PayPal data
-PP_CLIENT_ID = env("PP_CLIENT_ID")
-PP_SECRET = env("PP_SECRET")
-PP_SANDBOX_EMAIL = env("PP_SANDBOX_EMAIL")
-PP_API_BASE_URL = env("PP_API_BASE_URL")
 
 # Currency translation data 
 MP_BASE_URL = env("MP_BASE_URL")

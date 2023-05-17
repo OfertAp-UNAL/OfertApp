@@ -1,0 +1,14 @@
+{
+    "builds": [
+        {
+            "src": "src/OfertApp/wsgi.py",
+            "use": "@vercel/python"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "src/OfertApp/wsgi.py"
+        }
+    ]
+}
