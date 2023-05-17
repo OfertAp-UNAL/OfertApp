@@ -3,6 +3,7 @@ from auth.models import User, Admin
 from publications.models import Publication, Category, Offer, PublicationSupport
 from comments.models import Comment, Reaction
 from transactions.models import Transaction, Payment
+from notifications.models import Notification
 from django.core.management.base import BaseCommand
 from django.contrib.auth.hashers import make_password
     
@@ -253,4 +254,18 @@ class Command(BaseCommand):
                 ]
             )
             for i in range(number*5)
+        ]
+
+        # Seeding notifications
+        self.stdout.write("Seeding Notifications")
+        _ = [
+            Notification.objects.create(
+                user = users[
+                    fake.random_int(min=0, max=len(users) - 1)
+                ],
+                title = fake.text(max_nb_chars=45),
+                description = fake.text(),
+                isRead = fake.boolean()
+            )
+            for _ in range(number*10)
         ]
