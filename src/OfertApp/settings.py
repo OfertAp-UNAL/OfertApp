@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'util.apps.UtilConfig',
     'core.apps.CoreConfig',
     'payments.apps.PaymentsConfig',
+    'notifications.apps.NotificationsConfig',
     "rest_framework",
     "corsheaders",
     "django_seed"

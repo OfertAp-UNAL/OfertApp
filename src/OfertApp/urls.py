@@ -25,6 +25,7 @@ import util.urls as utilUrls
 import transactions.urls as transactionsUrls
 import core.urls as coreUrls
 import payments.urls as paymentsUrls
+import notifications.urls as notificationsUrls
 
 apiUrl = 'api/v1/'
 
@@ -37,6 +38,7 @@ urlpatterns = [
     path(apiUrl, include( transactionsUrls)),
     path(apiUrl, include( coreUrls)),
     path(apiUrl, include( paymentsUrls)),
+    path(apiUrl, include( notificationsUrls)),
 ]
 
 if settings.DEBUG:
