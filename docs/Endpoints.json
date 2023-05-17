@@ -14,7 +14,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"user\" : \"11fidel69\",\r\n    \"password\" : \"iw$k24VcWM\"\r\n}\r\n",
+					"raw": "{\r\n    \"user\" : \"9svaquero\",\r\n    \"password\" : \"hFK5Oz$S!5\"\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -257,7 +257,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8000/api/v1/publications/0c0215cb-b054-4d0e-9972-cd42d2611052/",
+					"raw": "localhost:8000/api/v1/publications/",
 					"host": [
 						"localhost"
 					],
@@ -266,7 +266,6 @@
 						"api",
 						"v1",
 						"publications",
-						"0c0215cb-b054-4d0e-9972-cd42d2611052",
 						""
 					]
 				}
@@ -605,7 +604,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc5ODUzOTQ1LCJpYXQiOjE2Nzk4NTIxNDUsImp0aSI6ImZiZDlhMmY2OTA4OTRkZWQ5Mjg5YmUwMTY4Yjk1NWI5IiwidXNlcl9pZCI6MTAwMDgzMzEwNywidXNlcm5hbWUiOiJlZGdvbnphbGV6ZGkiLCJlbWFpbCI6InRlc3RlZGdkMTIzQGdtYWlsLmNvbSJ9.p0h6BPMeB5WiYLDv9lnyStfWyNnQBkJftLGU4Zt1gIs",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjgzMzI0NTg0LCJpYXQiOjE2ODMzMjI3ODQsImp0aSI6ImMyNGNlMGUxZjgxMTRiMjNhZWQwYjc1YzRkMjcxZmJmIiwidXNlcl9pZCI6MTQsInVzZXJuYW1lIjoiMTRlcm9sZGFuIiwiZW1haWwiOiIxNHZhenF1ZXpyb3NhbHZhQGV4YW1wbGUuY29tIiwidmlwU3RhdGUiOmZhbHNlLCJ2aXBQdWJDb3VudCI6Mn0.wpT6j4ZgYhtf-6NVQeLJUcXbWOwGieeuJBOZFoh1EBA",
 							"type": "string"
 						}
 					]
@@ -622,7 +621,7 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8000/api/v1/comments/315e590a-cc27-4c6d-a170-483cd8afba7e/8c000b98-8880-4611-8859-58949a8b7c76/",
+					"raw": "localhost:8000/api/v1/comments/100fa19c-bcbd-4daa-900b-9ea85a9ed2a1/0f511e18-7077-409b-973a-7be8e571a00c/",
 					"host": [
 						"localhost"
 					],
@@ -631,8 +630,8 @@
 						"api",
 						"v1",
 						"comments",
-						"315e590a-cc27-4c6d-a170-483cd8afba7e",
-						"8c000b98-8880-4611-8859-58949a8b7c76",
+						"100fa19c-bcbd-4daa-900b-9ea85a9ed2a1",
+						"0f511e18-7077-409b-973a-7be8e571a00c",
 						""
 					]
 				}
@@ -881,6 +880,36 @@
 							"key": "viewFinancialBy",
 							"value": "quantity"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Notifications",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjg0Mjk1MzM1LCJpYXQiOjE2ODQyOTM1MzUsImp0aSI6ImZkYjc4NDVmYzc0ZjRjMmZhZmIzNTgxZGNiYzVhMjZhIiwidXNlcl9pZCI6OSwidXNlcm5hbWUiOiI5c3ZhcXVlcm8iLCJlbWFpbCI6IjliZW5hdmlkZXNwYWNhQGV4YW1wbGUubmV0IiwidmlwU3RhdGUiOnRydWUsInZpcFB1YkNvdW50Ijo3fQ.KmvS0uViYbj7jzA9AgSQEj5g49va1rPSyX3tkbTQaVY",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/api/v1/notifications",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"notifications"
 					]
 				}
 			},
