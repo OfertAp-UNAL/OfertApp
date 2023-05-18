@@ -1,1 +1,1 @@
-web: gunicorn 'OfertApp.wsgi'
+web: gunicorn 'src.OfertApp.wsgi'
