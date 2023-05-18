@@ -16,3 +16,11 @@ donde `n` representa la cantidad de registros en cada tabla a agregar
 `python manage.py runserver`
 
 NOTA: Se recomienda usar la versión 3.7.x de Python
+
+Si estás teniendo problemas al intentar usar pip install mysqlclient
+Puedes descargarlo de: https://www.lfd.uci.edu/~gohlke/pythonlibs/#mysqlclient
+y usar:
+	pip install <filename>.whl
+para instalarlo
+(Escoge la versión ...-cpxx-cpxx-... donde xx representa la versión de Python,
+por ejemplo, 37 para 3.7)
