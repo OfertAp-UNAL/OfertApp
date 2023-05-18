@@ -1,15 +1,14 @@
 {
-    "installCommand": "pip install -r requirements/requirements.txt",
     "builds": [
         {
-            "src": "src/OfertApp/wsgi.py",
+            "src": "OfertApp/wsgi.py",
             "use": "@vercel/python"
         }
     ],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "src/OfertApp/wsgi.py"
+            "dest": "OfertApp/wsgi.py"
         }
     ]
 }
