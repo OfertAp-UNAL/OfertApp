@@ -19,3 +19,18 @@ class NotificationView( APIView ):
         notifications = Notification.objects.filter( user = request.user )
         serializer = NotificationSerializer( notifications, many = True )
         return Response( serializer.data )
+
+    def post( self, request ):
+        # THis endpoint will update all notifications and mark them as read
+        if not request.user.is_authenticated:
+            return Response(
+                status=200,
+                data={
+                    "status": "error",
+                    "error": "User is not authenticated"
+                }
+            )
+
+        notifications = Notification.objects.filter( user = request.user )
+        notifications.update( read = True )
+        return Response( status = 200, data = { "status": "success" } )
