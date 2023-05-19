@@ -18,7 +18,7 @@ class PublicationView( APIView ):
         if not user.is_authenticated:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You must be logged in to perform this action"
+                "errors" : "You must be logged in to perform this action"
             })
 
         # Get data from request
@@ -109,7 +109,7 @@ class PublicationView( APIView ):
             except Publication.DoesNotExist:
                 return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "Invalid publication id"
+                    "errors" : "Invalid publication id"
                 })
 
         # Get parameters of filtering
@@ -230,14 +230,14 @@ class OfferView( APIView ):
         if user is None:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You must be logged in to make an offer"
+                "errors" : "You must be logged in to make an offer"
             })
         
         # All offers must belong to a publication
         if publicationId is None:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "Invalid publication id"
+                "errors" : "Invalid publication id"
             })
         
         amount = request.data.get("amount")
@@ -248,7 +248,7 @@ class OfferView( APIView ):
         except ValueError:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "Invalid amount"
+                "errors" : "Invalid amount"
             })
 
         # Check if publication exists
@@ -257,7 +257,7 @@ class OfferView( APIView ):
         except Publication.DoesNotExist:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "Invalid publication id"
+                "errors" : "Invalid publication id"
             })
 
         # Check offer
@@ -323,7 +323,7 @@ class OfferView( APIView ):
             status = 200,
             data = {
                 "status" : "error",
-                "error" : serializer.errors
+                "errors" : serializer.errors
             }
         )
     
@@ -345,7 +345,7 @@ class OfferView( APIView ):
                     status=200,
                     data = {
                         "status" : "error",
-                        "error" : "Invalid publication Id"
+                        "errors" : "Invalid publication Id"
                     })
         
         offers = Offer.objects.all()
