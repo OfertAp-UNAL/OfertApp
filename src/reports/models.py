@@ -71,14 +71,29 @@ class ReportSupport(models.Model):
         null=False, unique=True,
         db_column="repSopId"
     )
+    user = models.ForeignKey(
+        User,
+        related_name="reportsSupport",
+        on_delete=models.CASCADE,
+        db_column="usrId"
+    )
+    class TypeChoices(models.TextChoices):
+        IMAGE = 'IMAGE'
+        VIDEO = 'VIDEO'
+    type = models.CharField(
+        max_length=45, 
+        null=False, 
+        choices=TypeChoices.choices,
+        db_column="repSopType"
+    )
     body = models.TextField(
         max_length=255,
-        null=False,
+        null=True,
         db_column="repSopBody"
     )
     data = models.FileField(
         upload_to='reports_support_data',
-        blank=False, null=False,
+        blank=False, null=True,
         db_column="repSopData"
     )
     createdAt = models.DateTimeField(
