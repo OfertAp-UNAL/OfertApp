@@ -25,6 +25,7 @@ db.sqlite3
 profile_pictures
 publications_support_data
 receipts
+reports_support_data
 
 # AWS User-specific
 .idea/**/aws.xml
