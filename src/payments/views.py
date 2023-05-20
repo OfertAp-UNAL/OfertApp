@@ -57,7 +57,7 @@ class MercadoPagoRechargeView( APIView ):
 
 class MercadoPagoWithdrawalView( APIView ):
 
-    def post(self, request, type ):
+    def post(self, request ):
         amount = decimal.Decimal(request.data["amount"])
 
         error = checkWithdrawal( request.user, amount )
@@ -77,7 +77,3 @@ class MercadoPagoWithdrawalView( APIView ):
                 "amount" : amount
             }
         })
-        
-
-
-        

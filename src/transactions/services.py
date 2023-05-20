@@ -132,7 +132,7 @@ def withdrawBalance(
 
     # Create a Payment transaction
     payment = Payment.objects.create(
-        type = Payment.PaymentTypeChoices.CC,
+        type = Payment.PaymentTypeChoices.CREDIT_CARD,
         amount = amount,
         flow = Payment.PaymentFlowChoices.INFLOW
     )

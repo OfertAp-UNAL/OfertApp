@@ -28,6 +28,14 @@ class MunicipalityView( APIView ):
             elif type == "id":
                 # Get a specific municipality
                 return service.getMunicipalityById(value)
+        else:
+            return Response(
+                status = 200,
+                data = {
+                    "status": "error",
+                    "error": "Invalid parameters"
+                }
+            )
 
 class DepartmentsView( APIView ):
     

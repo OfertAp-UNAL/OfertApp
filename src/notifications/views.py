@@ -18,7 +18,13 @@ class NotificationView( APIView ):
 
         notifications = Notification.objects.filter( user = request.user )
         serializer = NotificationSerializer( notifications, many = True )
-        return Response( serializer.data )
+        return Response( 
+            status = 200,
+            data = {
+                "status" : "success",
+                "data" : serializer.data 
+            }
+        )
 
     def post( self, request ):
         # THis endpoint will update all notifications and mark them as read
@@ -32,5 +38,5 @@ class NotificationView( APIView ):
             )
 
         notifications = Notification.objects.filter( user = request.user )
-        notifications.update( read = True )
+        notifications.update( isRead = True )
         return Response( status = 200, data = { "status": "success" } )

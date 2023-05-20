@@ -22,15 +22,19 @@ class MunicipalityService():
             response = session.send(request.prepare())
 
             if( response.status_code != 200 ):
-                return {
-                    "status" : "error",
-                    "error" :  response.status_code
-                }
+                return Response( 
+                    status = 200,
+                    data = {
+                        "status" : "error",
+                        "error" :  response.status_code
+                    })
         except requests.exceptions.RequestException as e:
-            return {
-                "status" : "error",
-                "error" :  e.strerror
-            }
+            return Response( 
+                    status = 200,
+                    data = {
+                        "status" : "error",
+                        "error" :  e.strerror
+                    })
         
         json = response.json()
         response = {
@@ -41,19 +45,25 @@ class MunicipalityService():
         def refactorObject(json):
             if isMunicipality:
                 # It is a municipality
-                return {
-                    "id" : json["c_digo_dane_del_municipio"],
-                    "name" : json["municipio"],
-                    "department" : json["departamento"],
-                    "idDepartment" : json["c_digo_dane_del_departamento"],
-                    "region" : json["region"]
-                }
+                return Response( 
+                        status = 200,
+                        data ={
+                            "id" : json["c_digo_dane_del_municipio"],
+                            "name" : json["municipio"],
+                            "department" : json["departamento"],
+                            "idDepartment" : json["c_digo_dane_del_departamento"],
+                            "region" : json["region"]
+                        }
+                    )
             else:
                 # It is a departmanet
-                return {
-                    "id" : json["c_digo_dane_del_departamento"],
-                    "name" : json["departamento"],
-                }
+                return Response( 
+                        status = 200,
+                        data ={
+                            "id" : json["c_digo_dane_del_departamento"],
+                            "name" : json["departamento"],
+                        }
+                    )
 
         if many:
             # Build array of municipalities or departments
@@ -66,7 +76,10 @@ class MunicipalityService():
             # Build a single municipality or department
             response["data"] = refactorObject(json)
         
-        return Response( data = response )
+        return Response( 
+            status = 200,
+            data = response 
+        )
     
     def getAllDepartments(self):
         request = self.buildRequest(
@@ -139,3 +152,5 @@ class CurrencyTranslationService():
         # Value comes in COP units
         return self.copReference * value
 
+def getFileType( file ):
+    print( file )

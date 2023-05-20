@@ -77,9 +77,11 @@ class ReportSupport(models.Model):
         on_delete=models.CASCADE,
         db_column="usrId"
     )
+
     class TypeChoices(models.TextChoices):
         IMAGE = 'IMAGE'
         VIDEO = 'VIDEO'
+        
     type = models.CharField(
         max_length=45, 
         null=False, 

@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from reports.serializers import ReportSerializer, ReportSupportSerializer
+from reports.serializers import ReportSerializer, ReportSupportSerializer, ReportCreationSerializer, ReportSupportCreationSerializer
 from reports.models import Report, ReportSupport
 from publications.models import Publication
 
@@ -40,7 +40,7 @@ class ReportView( APIView):
             "publication" : publicationId          
         }    
 
-        serializer = ReportSerializer(data=data)
+        serializer = ReportCreationSerializer(data=data)
 
         if serializer.is_valid():
             
@@ -53,7 +53,7 @@ class ReportView( APIView):
         
         return Response(status = 200, data = {
             "status": "error",
-            "errors" : serializer.errors
+            "error" : serializer.errors
         })
     
     def get(self, request):
@@ -72,6 +72,9 @@ class ReportView( APIView):
             # Also get reports made to publications of the user
             Report.objects.filter(publication__user=user)
         )
+
+        # Lets order reports
+        report = report.order_by('-createdAt')
 
         return Response(status = 200, data = {
             "status" : "success",
@@ -108,14 +111,14 @@ class ReportSupportView( APIView):
         data = {
             "type" : request.data.get("type"), 
             "data" : request.data.get("data"), 
-            "user" : user.id, 
-            "report" : reportId        
+            "user" : user.id,
+            "report" : reportId      
         }   
 
         if body is not None:
             data["body"] = body
 
-        serializer = ReportSupportSerializer(data=data)
+        serializer = ReportSupportCreationSerializer(data=data)
 
         if serializer.is_valid():
             
@@ -128,7 +131,7 @@ class ReportSupportView( APIView):
         
         return Response(status = 200, data = {
             "status": "error",
-            "errors" : serializer.errors
+            "error" : serializer.errors
         })
 
     def get(self, request, reportId = None):
