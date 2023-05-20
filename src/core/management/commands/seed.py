@@ -4,6 +4,7 @@ from publications.models import Publication, Category, Offer, PublicationSupport
 from comments.models import Comment, Reaction
 from transactions.models import Transaction, Payment
 from notifications.models import Notification
+from reports.models import Report, ReportSupport
 from django.core.management.base import BaseCommand
 from django.contrib.auth.hashers import make_password
     
@@ -269,3 +270,39 @@ class Command(BaseCommand):
             )
             for _ in range(number*10)
         ]
+
+        # Seeding reports
+        self.stdout.write("Seeding Reports")
+        reports = [
+            Report.objects.create(
+                type = fake.random_element(elements=(
+                    'DF', 'SF', 'DL', 'MA', 'QF'
+                )),
+                body = fake.text( max_nb_chars=45 ),
+                user = users[
+                    fake.random_int(min=0, max=len(users) - 1)
+                ],
+                publication = publications[
+                    fake.random_int(min=0, max=len(publications) - 1)
+                ]
+            )
+            for _ in range(number*10)
+        ]
+
+        # Seeding report supports
+        self.stdout.write("Seeding ReportSupports")
+        _ = [
+            ReportSupport.objects.create(
+                user = users[
+                    fake.random_int(min=0, max=len(users) - 1)
+                ],
+                report = reports[
+                    fake.random_int(min=0, max=len(reports) - 1)
+                ],
+                type = "IMAGE",
+                data = "defaultProfile.png",
+                body = fake.text( max_nb_chars=45 )
+            )
+            for _ in range(number*10)
+        ]
+        

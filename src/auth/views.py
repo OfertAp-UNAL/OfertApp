@@ -8,9 +8,8 @@ from auth.token.serializers import CustomTokenPairSerializer
 from .token.customTokens import emailTokenGenerator, resetPasswordTokenGenerator
 from .models import User
 
-from auth.services import AccountCheckService, PermissionsCheckService
+from auth.services import AccountCheckService, checkUserPermissions
 accountService = AccountCheckService()
-permissionsService = PermissionsCheckService()
 
 class LoginView( APIView ):
     def post(self, request):
@@ -149,9 +148,17 @@ class UserInfoView( APIView ):
     def get(self, request):
         user = request.user
         if user is not None and user.is_authenticated:
+            permissions = checkUserPermissions(user)
+            responseDict = UserSerializer(user).data
+
+            # Permissions are added to the user's data
+            responseDict.update(permissions)
+
             return Response(status = 200, data = {
                 "status" : "success",
-                "data" : UserSerializer(user).data
+
+                # Permissions are added to the user's data
+                "data" : responseDict
             })
         
         return Response(status = 200, data = {
@@ -163,13 +170,8 @@ class UserInfoView( APIView ):
         user = request.user
         
         if user is not None and user.is_authenticated:
-
-            # Get profile picture from files array
-            if "profilePicture" in request.FILES:
-                request.data["profilePicture"] = request.FILES["profilePicture"]
             
             data = {
-                "id" : request.data.get("id"),
                 "email" : request.data.get("email"),
                 "username" : request.data.get("username"),
                 "birthdate" : request.data.get("birthdate"),
@@ -183,6 +185,7 @@ class UserInfoView( APIView ):
                 "idenIdType" : request.data.get("idenIdType"),
             }
 
+            # Get profile picture from files array
             if "profilePicture" in request.FILES:
                 data["profilePicture"] = request.FILES["profilePicture"]
 

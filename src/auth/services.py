@@ -24,6 +24,9 @@ class AccountCheckService():
         self.mastercard_keys = None
     
     def checkAccount(self, userData): 
+        return True
+        # DEPRECATED: Checks will be made temporarily on each transaction
+    
         if userData["accountType"] == 'PP':
             return self.checkPaypalAccount(userData)
         elif userData["accountType"] == 'NQ':
@@ -260,11 +263,10 @@ class AccountCheckService():
         except Exception as e:
             print(e)
 
-class PermissionsCheckService():
-
-    def checkUserPermissions(self, user ):
-        return {
-            'isAdmin' : user.admin is not None,
-            'isVerified' : user.verified,
-            'isBlocked' : user.blocked
-        }
+def checkUserPermissions( user ):
+    permissionsDict = {
+        'isAdmin' : hasattr(user, 'admin'),
+        'isVerified' : user.verified,
+        'isBlocked' : user.blocked
+    }
+    return permissionsDict

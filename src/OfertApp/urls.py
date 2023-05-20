@@ -26,6 +26,8 @@ import transactions.urls as transactionsUrls
 import core.urls as coreUrls
 import payments.urls as paymentsUrls
 import notifications.urls as notificationsUrls
+import admins.urls as adminsUrls
+import reports.urls as reportsUrls
 
 apiUrl = 'api/v1/'
 
@@ -39,6 +41,8 @@ urlpatterns = [
     path(apiUrl, include( coreUrls)),
     path(apiUrl, include( paymentsUrls)),
     path(apiUrl, include( notificationsUrls)),
+    path(apiUrl, include( adminsUrls)),
+    path(apiUrl, include( reportsUrls)),
 ]
 
 if settings.DEBUG:

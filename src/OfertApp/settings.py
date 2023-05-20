@@ -69,7 +69,8 @@ INSTALLED_APPS = [
     'notifications.apps.NotificationsConfig',
     "rest_framework",
     "corsheaders",
-    "django_seed"
+    "django_seed",
+    "django_apscheduler",
 ]
 
 MIDDLEWARE = [

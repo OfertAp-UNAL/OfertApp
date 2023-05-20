@@ -9,7 +9,7 @@ class ReportView( APIView):
         
         if publicationId is not None:
             try:
-                publication = Publication.objects.get(pk=publicationId)
+                Publication.objects.get(pk=publicationId)
                 
             except Publication.DoesNotExist:
                 return Response(status = 200, data = {
@@ -68,6 +68,10 @@ class ReportView( APIView):
                 "error" : "You must be logged in to perform this action"
             })
         report = Report.objects.filter(user=user)
+        report.union(
+            # Also get reports made to publications of the user
+            Report.objects.filter(publication__user=user)
+        )
 
         return Response(status = 200, data = {
             "status" : "success",
@@ -78,7 +82,7 @@ class ReportSupportView( APIView):
     def post( self,request, reportId = None ):
         if reportId is not None:
             try:
-                report = Report.objects.get(pk=reportId)
+                Report.objects.get(pk=reportId)
                 
             except Report.DoesNotExist:
                 return Response(status = 200, data = {
@@ -104,7 +108,8 @@ class ReportSupportView( APIView):
         data = {
             "type" : request.data.get("type"), 
             "data" : request.data.get("data"), 
-            "user" : user.id,         
+            "user" : user.id, 
+            "report" : reportId        
         }   
 
         if body is not None:
@@ -150,6 +155,7 @@ class ReportSupportView( APIView):
                 "status" : "error",
                 "error" : "You must be logged in to perform this action"
             })
+        
         reportSupport = ReportSupport.objects.filter(report=report)
 
         return Response(status = 200, data = {

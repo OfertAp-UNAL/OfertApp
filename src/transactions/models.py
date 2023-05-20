@@ -89,6 +89,7 @@ class Transaction(models.Model):
         BID_PLACED = 'BP' # Bid Placed
         COST_PER_SALE = "CS" # Cost due to sale (auction)
         BID_REVOKED = "BC" # Bid Revoked (Another user placed a higher bid)
+        BID_ACCEPTED = "BA" # Bid Accepted (User won the auction)
         ACCOUNT_RECHARGE = "AR" # Account recharge
         ACCOUNT_WITHDRAWAL = "AW" # Account withdrawal
         ADMIN_ADJUSTMENT = "AA" # Admin Adjustment

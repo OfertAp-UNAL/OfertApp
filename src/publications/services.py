@@ -1,9 +1,24 @@
 from rest_framework.response import Response
 from .models import Offer
-from transactions.models import Transaction
+from publications.models import Publication
+from notifications.models import Notification
+from auth.services import checkUserPermissions
+from transactions.services import acceptBid
+
 import datetime
 
 def checkOfferService(user, amount, publication):
+
+    # Getting user permissions
+    userPermissions = checkUserPermissions(user)
+
+    # If user is an admin, he is not supossed to make offers
+    if userPermissions['isAdmin']:
+        return Response(status = 200, data = {
+            "status" : "error",
+            "error" : "Admins can't make offers"
+        })
+
     # Check if amount is valid
     if amount < 0:
         return Response(status = 200, data = {
@@ -67,6 +82,16 @@ def checkPublicationService(
         user, prioritary, endDate,
         supportsData, supportsDescriptions, supportsTypes
     ):
+    # Getting user permissions
+    userPermissions = checkUserPermissions(user)
+
+    # If user is an admin, he is not supossed to make offers
+    if userPermissions['isAdmin']:
+        return Response(status = 200, data = {
+            "status" : "error",
+            "error" : "Admins can't make publications"
+        })
+    
     # Check if user is able to make a prioritary publication
     if prioritary:
         if not user.vipState:
@@ -103,3 +128,49 @@ def checkPublicationService(
             "status" : "error",
             "error" : "At least one support is required"
         })
+
+def checkPublicationExpiration():
+    # Getting all pending publications
+    pendingPublications = Publication.objects.filter(
+        available = True, endDate__lte = datetime.datetime.now()
+    )
+
+    # Iterate through each one and process
+    for publication in pendingPublications:
+        
+        # First, lets get the highest offer
+        publicationOffers = Offer.objects.filter(
+            publication = publication
+        ).order_by("-amount")
+
+        # If there are no offers, we can just notify the owner
+        if not publicationOffers or len(publicationOffers) == 0:
+            # Notify the owner
+            Notification.objects.create(
+                user = publication.user,
+                title = """
+                    Tu publicación %s ha expirado sin ofertas
+                    """ % publication.title,
+                description = """
+                    Mala suerte... Intenta publicarla de nuevo :)
+                    """
+            )
+            continue
+        
+        # This publication had offers, so we can perform the
+        # transaction
+        highestOffer = publicationOffers[0]
+
+        # Accept user's bid
+        acceptBid(
+            offer = highestOffer,
+            description = """
+                Tu oferta ha sido la ganadora de la subasta:
+                %s de %s
+                """ % (publication.title, publication.user.username)
+        )
+
+        # Now, lets perform the sell
+        # Alter publication
+        publication.available = False
+        publication.save()
