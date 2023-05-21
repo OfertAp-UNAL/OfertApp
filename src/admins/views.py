@@ -4,7 +4,7 @@ from publications.models import Publication, Offer
 from comments.models import Comment
 from reports.models import Report
 from reports.serializers import ReportSerializer
-from transactions.models import Transaction
+from transactions.services import transferToUser
 from auth.models import User, Admin
 from auth.services import checkUserPermissions
 
@@ -83,38 +83,6 @@ class CommentView(APIView):
                 }
             )
 
-class UserView(APIView):
-    def post(self, request, userId ):
-
-        # Should not allow this admin to act
-        response = checkPermissions(request)
-        if response != None:
-            return response
-        
-        # Here we will block users
-        data = {
-            "block" : request.data["block"]
-        }
-        try:
-            user = User.objects.get(id=userId)
-            user.block = data["block"]
-            user.save()
-            return Response(
-                status=200,
-                data = {
-                    "status" : "success",
-                    "data" : "User blocked"
-                }
-            )
-        except Exception:
-            return Response(
-                status=200,
-                data = {
-                    "status" : "error",
-                    "error" : "User not found"
-                }
-            )
-
 
     def delete(self, request, userId):
 
@@ -143,18 +111,6 @@ class UserView(APIView):
             )
 
 class ReportView( APIView ):
-    def get( self, request ):
-
-        # Get all reports in the whole system
-        reports = Report.objects.all().order_by("-date")
-        serializer = ReportSerializer(reports, many=True)
-        return Response(
-            status=200,
-            data = {
-                "status" : "success",
-                "data" : serializer.data
-            }
-        )
 
     def post(self, request, reportId ):
 
@@ -165,20 +121,35 @@ class ReportView( APIView ):
         
         # Change reports status
         data = {
-            "open" : request.data["open"]
+            "open" : request.data.get("open"),
+            "visible" : request.data.get("visible"),
+            "blockState" : request.data.get("blockState"),
+            "transactionState" : request.data.get("transactionState"),
+            "amount" : request.data.get("amount")
         }
+
+
+        # General checks, always prefer not to make suspicious actions
+        try:
+            data["blockState"] = int(data["blockState"])
+        except Exception:
+            data["blockState"] = 1
+
+        try:
+            data["transactionState"] = int(data["transactionState"])
+        except Exception:
+            data["transactionState"] = 1
+        
+        try:
+            data["amount"] = int(data["amount"])
+        except Exception:
+            data["amount"] = 0
 
         try:
             report = Report.objects.get(id=reportId)
             report.open = data["open"]
-            report.save()
-            return Response(
-                status=200,
-                data = {
-                    "status" : "success",
-                    "data" : "Report status changed"
-                }
-            )
+            report.visible = data["visible"]
+            report.save() # First save global configs for this report
         except Exception:
             return Response(
                 status=200,
@@ -188,6 +159,103 @@ class ReportView( APIView ):
                 }
             )
 
+        # Now lets check if further process are neccesary
+        blockedState = data["blockState"]
 
+        if blockedState == 2:
+            # Block the user who reports
+            try:
+                user = User.objects.get(id=report.user.id)
+                user.blocked = True
+                user.save()
+            except Exception:
+                return Response(
+                    status=200,
+                    data = {
+                        "status" : "error",
+                        "error" : "User not found"
+                    }
+                )
+        elif blockedState == 3:
+            # Block the user who is reported
+            try:
+                user = User.objects.get(id=report.publication.user.id)
+                user.blocked = True
+                user.save()
+            except Exception:
+                return Response(
+                    status=200,
+                    data = {
+                        "status" : "error",
+                        "error" : "User not found"
+                    }
+                )
+         
+         # Other cases do not require any further action
 
+        # Now check actions needed for transactions
+        transactionState = data["transactionState"]
+        amount = data["amount"]
+        
+        if transactionState == 2:
+            # Perform a transaction to the user who reports
+            try:
+                # Getting the user who reports
+                user = User.objects.get(id=report.user.id)
 
+                # Get myself as Admin
+                admin = Admin.objects.get(user_id=request.user.id)
+
+                transferToUser(
+                    targetUser = user,
+                    description = """
+                        Transacción debido a reporte No. 
+                        """ + str(report.id) + """
+                    """,
+                    amount = amount,
+                    admin = admin
+                )
+            except Exception:
+                return Response(
+                    status=200,
+                    data = {
+                        "status" : "error",
+                        "error" : "User not found"
+                    }
+                )
+        elif transactionState == 3:
+            # Perform a transaction to the user who is getting reported
+            try:
+                # Getting the user who is getting reported
+                user = User.objects.get(id=report.publication.user.id)
+
+                # Get myself as Admin
+                admin = Admin.objects.get(user_id=request.user.id)
+
+                transferToUser(
+                    targetUser = user,
+                    description = """
+                        Transacción debido a reporte No. 
+                        """ + str(report.id) + """
+                    """,
+                    amount = amount,
+                    admin = admin
+                )
+            except Exception as e:
+                print( e )
+                return Response(
+                    status=200,
+                    data = {
+                        "status" : "error",
+                        "error" : "User not found"
+                    }
+                )
+
+        # Other cases do not require any further action
+        return Response(
+            status=200,
+            data = {
+                "status" : "success",
+                "data" : "Report updated"
+            }
+        )

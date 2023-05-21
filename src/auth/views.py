@@ -102,10 +102,12 @@ class RegisterView( APIView ):
             "idenIdType" : request.data.get("idenIdType"),
         }
 
+        # TODO: Read type by means of the property: content_type
 
         # Get profile picture from files array
         if "profilePicture" in request.FILES:
             data["profilePicture"] = request.FILES["profilePicture"]
+            
 
         # Hash password
         data["password"] = make_password(data["password"])

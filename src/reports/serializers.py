@@ -32,5 +32,3 @@ class ReportSupportSerializer(serializers.ModelSerializer):
             'id', 'user', 'type', 'body', 'data', 'visible', 'report', 'createdAt')
     
     user = UserSerializer()
-    report = ReportSerializer()
-

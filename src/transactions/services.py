@@ -159,3 +159,30 @@ def withdrawBalance(
 
     # Save transaction
     transaction.save()
+
+def transferToUser(
+    targetUser, description, amount, admin
+):
+    # Register transaction and payment for this user
+    account = targetUser.account
+
+    # Create a Transaction
+    transaction = Transaction.objects.create(
+        type = Transaction.TransactionTypeChoices.ADMIN_ADJUSTMENT,
+        description = description,
+        amount = amount,
+        prevBalance = account.balance,
+        postBalance = account.balance + amount,
+        prevFrozen = account.frozen,
+        postFrozen = account.frozen,
+        flow = Transaction.TransactionFlowChoices.INFLOW,
+        account = account,
+        admin = admin
+    )
+
+    # Alter account
+    account.balance += amount
+    account.save()
+
+    # Save transaction
+    transaction.save()
