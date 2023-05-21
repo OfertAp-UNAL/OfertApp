@@ -63,7 +63,6 @@ class Publication(models.Model):
         # Calculate a percentage which representes publication priority
         return a * a_weight + b * b_weight + c * c_weight + d * d_weight
 
-    
     id = models.UUIDField(
         default=uuid.uuid4, 
         primary_key=True, 
@@ -127,8 +126,13 @@ class Publication(models.Model):
         null=True,
         db_column="pubDeliveryId"
     )
-    
 
+    # Buyer confirmed he got the product
+    confirmed = models.BooleanField(
+        default=False, null=False,
+        db_column="pubConfirmed"
+    )
+    
 class Offer(models.Model):
     class Meta:
         db_table = "OFFER"
@@ -200,5 +204,3 @@ class PublicationSupport(models.Model):
         on_delete= models.CASCADE,
         db_column="pubId"
     )
-
-    

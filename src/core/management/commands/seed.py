@@ -61,7 +61,8 @@ class Command(BaseCommand):
                 )),
                 verified = True,
                 vipState = fake.random_element(elements=(True, False)),
-                vipPubCount = fake.random_int(min=0, max=10)
+                vipPubCount = fake.random_int(min=0, max=10),
+                vipMemberSince = fake.date(),
             )
 
             # Update user's balance

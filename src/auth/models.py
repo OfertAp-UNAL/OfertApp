@@ -106,6 +106,10 @@ class User(AbstractUser):
         default=0, null=False,
         db_column="usrVipPubCount"
     )
+    vipMemberSince = models.DateField(
+        auto_now=False, auto_now_add=False, null=True,
+        db_column="usrVipMemberSince"
+    )
     reputation = models.FloatField(
         default=1.0, null=False,
         db_column="usrReputation",

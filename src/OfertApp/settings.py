@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 import environ
 import os
+import decimal
+
 from datetime import timedelta
 
 import pymysql
@@ -207,6 +209,11 @@ EMAIL_PASSWORD_RESET_URL_ENDPOINT = env("EMAIL_PASSWORD_RESET_URL_ENDPOINT")
 MP_BASE_URL = env("MP_BASE_URL")
 MP_ACCESS_TOKEN = env("MP_ACCESS_TOKEN")
 MP_PUBLIC_KEY = env("MP_PUBLIC_KEY")
+
+# Membership costs
+MEMBERSHIP_COST = decimal.Decimal(env("MEMBERSHIP_COST"))
+MEMBERSHIP_TIME = decimal.Decimal(env("MEMBERSHIP_TIME")) # days
+MEMBERSHIP_PUBLICATIONS = env("MEMBERSHIP_PUBLICATIONS") # Number of boosteable publications
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

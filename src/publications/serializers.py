@@ -48,7 +48,7 @@ class PublicationSerializer(serializers.ModelSerializer):
         model = Publication
         fields = (
             'title', 'description', 'minOffer', 'endDate', 'available', 'reportable', 'category',
-            'user', 'id', 'priority', 'user', 'comments', 'offers', 'supports')
+            'user', 'id', 'priority', 'user', 'comments', 'offers', 'supports', 'deliveryType', 'deliveryId')
     
     user = UserSerializer()
     category = CategorySerializer()
@@ -71,7 +71,3 @@ class PublicationSerializer(serializers.ModelSerializer):
     def get_offers(self, publication):
         offers = publication.offers.all().order_by('-amount')
         return OfferSerializer(offers, many=True).data
-
-        
-
-    
