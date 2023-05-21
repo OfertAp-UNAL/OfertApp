@@ -1,4 +1,6 @@
 from .models import Transaction, Payment
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
 import decimal
 
 def placeBid(
@@ -84,6 +86,72 @@ def acceptBid(
     )
 
     transaction.save()
+
+    # Notify user via email
+    # Getting user's id
+    publicationId = offer.publication.id
+
+    # Get seller and ask him for providing shipping information
+    seller = offer.publication.user
+
+    subject = '[OfertApp Team] Adjunta información de envío de producto'
+    from_email = settings.EMAIL_HOST_USER
+    to = seller.email
+    text_content = f'''
+        <h1 style="color:#00BF63">Adjunta información de envío de producto</h1>
+        <p>Tan pronto como envíes tu producto, por favor adjunta la información de envío en el siguiente enlace
+        <a href="{settings.WEB_URL}delivery/{publicationId}/">
+            Agregar información de envío
+        </a></p>
+
+        No contestes a este mensaje (y perdon por el spam :D)
+    '''
+
+    try:
+        # Sometimes emails get ratelimited
+        email = EmailMultiAlternatives(
+            subject,
+            text_content,
+            from_email,
+            [to]
+        )
+        email.content_subtype = "html"
+
+        email.send()
+
+    except Exception as e:
+        print(e)
+
+    # Get buyer and ask him for confirming the reception of the product
+    buyer = offer.user
+
+    subject = '[OfertApp Team] Confirma la recepción de tu producto'
+    from_email = settings.EMAIL_HOST_USER
+    to = buyer.email
+    text_content = f'''
+        <h1 style="color:#00BF63">Confirma la recepción de tu producto</h1>
+        <p>Una vez hayas recibido tu producto, por favor confirma la recepción en el siguiente enlace
+        <a href="{settings.WEB_URL}confirm/{publicationId}/">
+            Confirmar recepción
+        </a></p>
+        
+        No contestes a este mensaje (y perdon por el spam :D)
+    '''
+
+    try:
+        # Sometimes emails get ratelimited
+        email = EmailMultiAlternatives(
+            subject,
+            text_content,
+            from_email,
+            [to]
+        )
+        email.content_subtype = "html"
+
+        email.send()
+
+    except Exception as e:
+        print(e)
 
 def rechargeBalance(
     user, transactionData
@@ -182,6 +250,35 @@ def transferToUser(
 
     # Alter account
     account.balance += amount
+    account.save()
+
+    # Save transaction
+    transaction.save()
+
+def buyMembership(
+    user
+):
+    # Calculate membresy cost
+    amount = decimal.Decimal( settings.MEMBERSHIP_COST )
+    
+    # Register transaction and payment for this user
+    account = user.account
+
+    # Create a Transaction
+    transaction = Transaction.objects.create(
+        type = Transaction.TransactionTypeChoices.OTHER,
+        description = "Renovaste tu membresía!",
+        amount = amount,
+        prevBalance = account.balance - amount,
+        postBalance = account.balance,
+        prevFrozen = account.frozen,
+        postFrozen = account.frozen,
+        flow = Transaction.TransactionFlowChoices.INFLOW,
+        account = account
+    )
+
+    # Alter account
+    account.balance -= amount
     account.save()
 
     # Save transaction

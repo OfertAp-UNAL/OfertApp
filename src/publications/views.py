@@ -354,3 +354,133 @@ class OfferView( APIView ):
             "status" : "success",
             "data" : OfferSerializer(offers, many=True).data
         })
+
+class DeliveryView( APIView ):
+    def post( self, request, publicationId ):
+
+        data = {
+            "deliveryId" : request.data.get("deliveryId"),
+            "deliveryType" : request.data.get("deliveryType"),
+        }
+
+        user = request.user
+        if user is None or not user.is_authenticated:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "You must be logged in to perform this action"
+            })
+
+        # Check if user is the owner of the publication
+        try:
+            publication = Publication.objects.get(id=publicationId)
+        except Publication.DoesNotExist:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "Invalid publication id"
+            })
+        
+        if publication.user.id != user.id:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "You are not the owner of this publication"
+            })
+        
+        # Check if publication has an offer
+        try:
+            offer = Offer.objects.filter(publication=publicationId)
+        except Offer.DoesNotExist:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "This publication has no offers"
+            })
+        
+        if not offer or len(offer) == 0:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "This publication has no offers"
+            })
+    
+        # Check if publication has a delivery
+        if publication.deliveryType is not None:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "This publication already has a delivery"
+            })
+        
+        # Update publication info
+        serializer = PublicationSerializer(
+            publication,
+            data = data,
+            partial = True
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(status = 200, data = {
+                "status" : "success",
+                "data" : serializer.data
+            })
+        
+        return Response(status = 200, data = {
+            "status" : "error",
+            "error" : serializer.errors
+        })
+
+class ConfirmationView( APIView ):
+    def post(self, request, publicationId):
+        # Get user from request
+        user = request.user
+
+        # Check if user is authenticated
+        if not user.is_authenticated:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "You must be logged in to perform this action"
+            })
+        
+        # Check if publication exists
+        try:
+            publication = Publication.objects.get(id=publicationId)
+        except Publication.DoesNotExist:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "Invalid publication id"
+            })
+        
+        # Check if user is the winner of the publication
+        try:
+            offers = Offer.objects.filter(publication=publicationId).order_by("-amount")
+        except Offer.DoesNotExist:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "This publication has no offers"
+            })
+        
+        if len(offers) == 0:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "This publication has no offers"
+            })
+        
+        if user.id != offers[0].user.id:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "You are not the winner of this publication"
+            })
+        
+        # Check if publication has a delivery
+        if publication.deliveryType is None:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "This publication has no delivery information"
+            })
+        
+        # Now mark publication as confirmed
+        publication.confirmed = True
+        publication.save()
+
+        return Response(status = 200, data = {
+            "status" : "success",
+            "data" : PublicationSerializer(publication).data
+        })
