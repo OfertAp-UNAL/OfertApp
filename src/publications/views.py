@@ -427,7 +427,60 @@ class DeliveryView( APIView ):
             "error" : serializer.errors
         })
 
+class ConfirmationView( APIView ):
+    def post(self, request, publicationId):
+        # Get user from request
+        user = request.user
 
+        # Check if user is authenticated
+        if not user.is_authenticated:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "You must be logged in to perform this action"
+            })
         
+        # Check if publication exists
+        try:
+            publication = Publication.objects.get(id=publicationId)
+        except Publication.DoesNotExist:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "Invalid publication id"
+            })
+        
+        # Check if user is the winner of the publication
+        try:
+            offers = Offer.objects.filter(publication=publicationId).order_by("-amount")
+        except Offer.DoesNotExist:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "This publication has no offers"
+            })
+        
+        if len(offers) == 0:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "This publication has no offers"
+            })
+        
+        if user.id != offers[0].user.id:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "You are not the winner of this publication"
+            })
+        
+        # Check if publication has a delivery
+        if publication.deliveryType is None:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "This publication has no delivery information"
+            })
+        
+        # Now mark publication as confirmed
+        publication.confirmed = True
+        publication.save()
 
-            
+        return Response(status = 200, data = {
+            "status" : "success",
+            "data" : PublicationSerializer(publication).data
+        })

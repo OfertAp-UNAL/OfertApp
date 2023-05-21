@@ -91,7 +91,7 @@ def acceptBid(
     # Getting user's id
     publicationId = offer.publication.id
 
-    # Get seller 
+    # Get seller and ask him for providing shipping information
     seller = offer.publication.user
 
     subject = '[OfertApp Team] Adjunta información de envío de producto'
@@ -104,6 +104,37 @@ def acceptBid(
             Agregar información de envío
         </a></p>
 
+        No contestes a este mensaje (y perdon por el spam :D)
+    '''
+
+    try:
+        # Sometimes emails get ratelimited
+        email = EmailMultiAlternatives(
+            subject,
+            text_content,
+            from_email,
+            [to]
+        )
+        email.content_subtype = "html"
+
+        email.send()
+
+    except Exception as e:
+        print(e)
+
+    # Get buyer and ask him for confirming the reception of the product
+    buyer = offer.user
+
+    subject = '[OfertApp Team] Confirma la recepción de tu producto'
+    from_email = settings.EMAIL_HOST_USER
+    to = buyer.email
+    text_content = f'''
+        <h1 style="color:#00BF63">Confirma la recepción de tu producto</h1>
+        <p>Una vez hayas recibido tu producto, por favor confirma la recepción en el siguiente enlace
+        <a href="{settings.WEB_URL}confirm/{publicationId}/">
+            Confirmar recepción
+        </a></p>
+        
         No contestes a este mensaje (y perdon por el spam :D)
     '''
 

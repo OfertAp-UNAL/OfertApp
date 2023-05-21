@@ -48,7 +48,9 @@ class PublicationSerializer(serializers.ModelSerializer):
         model = Publication
         fields = (
             'title', 'description', 'minOffer', 'endDate', 'available', 'reportable', 'category',
-            'user', 'id', 'priority', 'user', 'comments', 'offers', 'supports', 'deliveryType', 'deliveryId')
+            'user', 'id', 'priority', 'user', 'comments', 'offers', 'supports', 'deliveryType', 'deliveryId',
+            'createdAt', 'confirmed'
+            )
     
     user = UserSerializer()
     category = CategorySerializer()
