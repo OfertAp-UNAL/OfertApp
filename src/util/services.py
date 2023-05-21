@@ -45,25 +45,19 @@ class MunicipalityService():
         def refactorObject(json):
             if isMunicipality:
                 # It is a municipality
-                return Response( 
-                        status = 200,
-                        data ={
-                            "id" : json["c_digo_dane_del_municipio"],
-                            "name" : json["municipio"],
-                            "department" : json["departamento"],
-                            "idDepartment" : json["c_digo_dane_del_departamento"],
-                            "region" : json["region"]
-                        }
-                    )
+                return {
+                    "id" : json["c_digo_dane_del_municipio"],
+                    "name" : json["municipio"],
+                    "department" : json["departamento"],
+                    "idDepartment" : json["c_digo_dane_del_departamento"],
+                    "region" : json["region"]
+                }
             else:
                 # It is a departmanet
-                return Response( 
-                        status = 200,
-                        data ={
-                            "id" : json["c_digo_dane_del_departamento"],
-                            "name" : json["departamento"],
-                        }
-                    )
+                return {
+                    "id" : json["c_digo_dane_del_departamento"],
+                    "name" : json["departamento"]
+                }
 
         if many:
             # Build array of municipalities or departments
@@ -75,7 +69,7 @@ class MunicipalityService():
         else:
             # Build a single municipality or department
             response["data"] = refactorObject(json)
-        
+
         return Response( 
             status = 200,
             data = response 
@@ -89,6 +83,7 @@ class MunicipalityService():
                 "$group" : "c_digo_dane_del_departamento,departamento"
             }
         )
+        
         # there are department objects
         return self.friendlyResponse(request, many = True, isMunicipality = False)
     

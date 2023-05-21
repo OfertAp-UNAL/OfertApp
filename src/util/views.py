@@ -42,7 +42,7 @@ class DepartmentsView( APIView ):
     def get(self, request):
         # Get all departments
         return service.getAllDepartments()
-        
+    
 class StatisticView( APIView ):
     
     def get(self, request):
