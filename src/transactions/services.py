@@ -273,7 +273,7 @@ def buyMembership(
         postBalance = account.balance,
         prevFrozen = account.frozen,
         postFrozen = account.frozen,
-        flow = Transaction.TransactionFlowChoices.INFLOW,
+        flow = Transaction.TransactionFlowChoices.OUTFLOW,
         account = account
     )
 
