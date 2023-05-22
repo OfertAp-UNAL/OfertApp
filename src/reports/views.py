@@ -1,5 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.db.models import Q
 from reports.serializers import ReportSerializer, ReportSupportSerializer, ReportCreationSerializer, ReportSupportCreationSerializer
 from reports.models import Report, ReportSupport
 from publications.models import Publication
@@ -84,24 +85,22 @@ class ReportView( APIView):
 
         # If user is an admin, he is not supossed to make offers
         if userPermissions['isAdmin']:
-            reports = Report.objects.all()[:10]
+            reports = Report.objects.all()
             return Response(status = 200, data = {
                 "status" : "success",
                 "data" : ReportSerializer(reports, many=True).data
             })
 
-        report = Report.objects.filter(user=user)
-        report.union(
-            # Also get reports made to publications of the user
-            Report.objects.filter(publication__user=user)
+        reportsData = Report.objects.filter(
+            Q(user=user) | Q(publication__user=user)
         )
 
         # Lets order reports
-        report = report.order_by('-createdAt')
+        reportsData = reportsData.order_by('-createdAt')
 
         return Response(status = 200, data = {
             "status" : "success",
-            "data" : ReportSerializer(report, many=True).data
+            "data" : ReportSerializer(reportsData, many=True).data
         })
 
 class ReportSupportView( APIView):

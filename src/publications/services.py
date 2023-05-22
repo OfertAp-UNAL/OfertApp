@@ -134,7 +134,8 @@ def checkPublicationExpiration():
     pendingPublications = Publication.objects.filter(
         available = True, endDate__lte = datetime.datetime.now()
     )
-
+    print("================================")
+    print("Pending pubs: " + str(len( pendingPublications )))
     # Iterate through each one and process
     for publication in pendingPublications:
         
