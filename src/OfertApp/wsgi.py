@@ -17,3 +17,11 @@ application = get_wsgi_application()
 
 # Vercel config little detail over here :)
 app = application
+
+print("STARTING SCHEDULER")
+# Init scheduler
+# IMPORTANT: Seems like you'll have to comment this code, run
+# django_scheduler migrations (normal migrate command) and then
+# uncomment this code again and run the server
+from scheduler import scheduler
+scheduler.start()

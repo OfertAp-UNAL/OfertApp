@@ -214,6 +214,9 @@ MP_PUBLIC_KEY = env("MP_PUBLIC_KEY")
 MEMBERSHIP_COST = decimal.Decimal(env("MEMBERSHIP_COST"))
 MEMBERSHIP_TIME = decimal.Decimal(env("MEMBERSHIP_TIME")) # days
 MEMBERSHIP_PUBLICATIONS = env("MEMBERSHIP_PUBLICATIONS") # Number of boosteable publications
+FEE_PERCENT = decimal.Decimal(env("FEE_PERCENT")) # Percentage of publication cost
+
+ENABLE_SCHEDULERS = env("ENABLE_SCHEDULERS") # Enable or disable schedulers
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

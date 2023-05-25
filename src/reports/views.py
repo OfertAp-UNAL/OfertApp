@@ -11,7 +11,7 @@ class ReportView( APIView):
         
         if publicationId is not None:
             try:
-                Publication.objects.get(pk=publicationId)
+                publication = Publication.objects.get(pk=publicationId)
                 
             except Publication.DoesNotExist:
                 return Response(status = 200, data = {
@@ -42,6 +42,13 @@ class ReportView( APIView):
             return Response(status = 200, data = {
                 "status" : "error",
                 "error" : "Admins can't make reports"
+            })
+
+        # Check if user isn't placing reports for himself
+        if publication.user.id == user.id:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "You can't report yourself"
             })
     
         # Get data from request

@@ -7,6 +7,7 @@ from transactions.services import placeBid, revokeBid
 
 from publications.models import Publication, Category, Offer
 from .services import checkOfferService, checkPublicationService
+from transactions.services import acceptBidOffer, notify
 
 class PublicationView( APIView ):
     def post( self, request ):
@@ -227,7 +228,7 @@ class OfferView( APIView ):
         user = request.user
 
         # Check if user is authenticated
-        if user is None:
+        if user is None or not user.is_authenticated:
             return Response(status = 200, data = {
                 "status" : "error",
                 "errors" : "You must be logged in to make an offer"
@@ -282,11 +283,7 @@ class OfferView( APIView ):
             offer = serializer.save()
 
             # Freeze money for this offer
-            placeBid(offer,
-                "Pusiste una oferta sobre la publicación " +
-                publication.title + " de " + publication.user.username +
-                " por $" + str(offer.amount) + "."
-            )
+            placeBid( offer )
 
             # Disable previous higher offer, if any
             availableOffers = Offer.objects.filter(
@@ -303,11 +300,7 @@ class OfferView( APIView ):
                 availableOffer.save()
 
                 # Unfreeze money for this offer
-                revokeBid(availableOffer, 
-                    user.username + " puso una oferta mayor en la publicación " +
-                    publication.title + " de " + publication.user.username +
-                    " por $" + str(offer.amount) + "."
-                )
+                revokeBid(availableOffer)
         
             # Create a transaction: Freeze needed money for this offer
 
@@ -479,6 +472,9 @@ class ConfirmationView( APIView ):
         # Now mark publication as confirmed
         publication.confirmed = True
         publication.save()
+
+        # Finally, end the transaction
+        acceptBidOffer(publication)
 
         return Response(status = 200, data = {
             "status" : "success",

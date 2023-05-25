@@ -5,18 +5,19 @@ from django.conf import settings
 from .token.customTokens import emailTokenGenerator, resetPasswordTokenGenerator
 from django.core.mail import EmailMultiAlternatives
 from django.utils.http import urlsafe_base64_encode
+from .models import User
 from dict_hash import sha256
+from datetime import datetime
+from util.services import notify
 
 # Mastercard imports
 import oauth1.authenticationutils as authutils
-from oauth1.oauth import OAuth
 from oauth1.signer import OAuthSigner
 
 # Read env variables
 env = environ.Env()
 environ.Env.read_env()
 
-# TODO Complete
 class AccountCheckService():
     def __init__(self ):
         self.nequi_token = None
@@ -270,3 +271,25 @@ def checkUserPermissions( user ):
         'isBlocked' : user.blocked
     }
     return permissionsDict
+
+def checkMembershipExpiration( ):
+    expiredUsers = User.objects.filter(
+        vipMemberSince__lte = datetime.now(),
+        vipState = True
+    )
+    print("================================")
+    print("Expired users: " + str(len( expiredUsers )))
+
+    if not settings.ENABLE_SCHEDULERS:
+        print("Skipping scheduler")
+        return
+
+    for user in expiredUsers:
+        user.vipState = False
+        user.save()
+
+        # Notify the user sighly
+        notify(
+            user, "Tu membresía ha expirado",
+            "Tu membresía ha expirado, puedes renovarla en cualquier momento"
+        )

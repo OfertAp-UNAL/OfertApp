@@ -1,9 +1,9 @@
 from rest_framework.response import Response
 from .models import Offer
 from publications.models import Publication
-from notifications.models import Notification
+from django.conf import settings
 from auth.services import checkUserPermissions
-from transactions.services import acceptBid
+from transactions.services import finishBid
 
 import datetime
 
@@ -136,42 +136,13 @@ def checkPublicationExpiration():
     )
     print("================================")
     print("Pending pubs: " + str(len( pendingPublications )))
+
+    if not settings.ENABLE_SCHEDULERS:
+        print("Skipping scheduler")
+        return
+    
     # Iterate through each one and process
     for publication in pendingPublications:
         
-        # First, lets get the highest offer
-        publicationOffers = Offer.objects.filter(
-            publication = publication
-        ).order_by("-amount")
-
-        # If there are no offers, we can just notify the owner
-        if not publicationOffers or len(publicationOffers) == 0:
-            # Notify the owner
-            Notification.objects.create(
-                user = publication.user,
-                title = """
-                    Tu publicación %s ha expirado sin ofertas
-                    """ % publication.title,
-                description = """
-                    Mala suerte... Intenta publicarla de nuevo :)
-                    """
-            )
-            continue
-        
-        # This publication had offers, so we can perform the
-        # transaction
-        highestOffer = publicationOffers[0]
-
-        # Accept user's bid
-        acceptBid(
-            offer = highestOffer,
-            description = """
-                Tu oferta ha sido la ganadora de la subasta:
-                %s de %s
-                """ % (publication.title, publication.user.username)
-        )
-
-        # Now, lets perform the sell
-        # Alter publication
-        publication.available = False
-        publication.save()
+        # End bid (Note actual transactions aren't performed yet)
+        finishBid(publication)

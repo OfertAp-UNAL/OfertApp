@@ -1,6 +1,8 @@
 import requests
 from django.conf import settings
 from rest_framework.response import Response
+from django.core.mail import EmailMultiAlternatives
+from notifications.models import Notification
 
 class MunicipalityService():
     def __init__(self):
@@ -146,6 +148,45 @@ class CurrencyTranslationService():
     def convert(self, value):
         # Value comes in COP units
         return self.copReference * value
+
+def sendEmail( 
+        to, subject, subtitle, body 
+    ):
+
+    subject = f'[OfertApp Team] {subject}'
+    from_email = settings.EMAIL_HOST_USER
+    to = to.email
+    text_content = f'''
+        <h1 style="color:#00BF63">{subtitle}</h1>
+        {body}
+
+        No contestes a este mensaje (y perdon por el spam :D)
+    '''
+
+    try:
+        # Sometimes emails get ratelimited
+        email = EmailMultiAlternatives(
+            subject,
+            text_content,
+            from_email,
+            [to]
+        )
+        email.content_subtype = "html"
+
+        email.send()
+
+    except Exception as e:
+        print(e)
+
+def notify(
+    user, title, description
+):
+    # Notify an user
+    Notification.objects.create(
+        user = user,
+        title = title,
+        description = description
+    )
 
 def getFileType( file ):
     print( file )
