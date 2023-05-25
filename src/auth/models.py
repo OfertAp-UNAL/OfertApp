@@ -54,13 +54,11 @@ class User(AbstractUser):
         auto_now=False, auto_now_add=False, null=False,
         db_column="usrBirthdate"
     )
-
     idenIdType = models.CharField(
         max_length=3, choices=IdentificationType.choices,
         default=IdentificationType.CC, null=False,
         db_column="usrIdType"
     )
-    
     phone = models.CharField(
         max_length=20, null=False,
         db_column="usrPhone"
@@ -74,10 +72,10 @@ class User(AbstractUser):
         null=False,
         db_column="usrTownId"
     )
-    profilePicture = models.ImageField(
-        upload_to='profile_pictures', blank=False, null=False,
+    profilePicture = models.URLField(
+        max_length=200, null=False,
         db_column="usrProfilePicture",
-        default="defaultProfile.png"
+        default="https://cdn.filestackcontent.com/pLDF5BZTP6ASwiobbC8W"
     )
     blocked = models.BooleanField(
         default=False, null=False,
@@ -87,13 +85,11 @@ class User(AbstractUser):
         default=False, null=False,
         db_column="usrVerified"
     )
-
     accountType = models.CharField(
         max_length=2, choices=AccountType.choices, 
         default=AccountType.PAYPAL, null=False,
         db_column="usrAccountType"
     )
-
     accountId = models.CharField(
         max_length=45, null=False,
         db_column="usrAccountId"

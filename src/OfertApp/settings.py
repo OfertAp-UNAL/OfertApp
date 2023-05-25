@@ -216,7 +216,10 @@ MEMBERSHIP_TIME = decimal.Decimal(env("MEMBERSHIP_TIME")) # days
 MEMBERSHIP_PUBLICATIONS = env("MEMBERSHIP_PUBLICATIONS") # Number of boosteable publications
 FEE_PERCENT = decimal.Decimal(env("FEE_PERCENT")) # Percentage of publication cost
 
-ENABLE_SCHEDULERS = env("ENABLE_SCHEDULERS") # Enable or disable schedulers
+# Scheduler
+ENABLE_SCHEDULERS = env("ENABLE_SCHEDULERS", default=False, cast=bool)
+
+FILESTACK_API_KEY = env("FILESTACK_API_KEY")
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

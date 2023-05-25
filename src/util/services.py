@@ -4,6 +4,9 @@ from rest_framework.response import Response
 from django.core.mail import EmailMultiAlternatives
 from notifications.models import Notification
 
+from filestack import Client
+client = Client(settings.FILESTACK_API_KEY)
+
 class MunicipalityService():
     def __init__(self):
         self.url = settings.MUNICIPALITY_SERVICE_URL
@@ -187,6 +190,26 @@ def notify(
         title = title,
         description = description
     )
+
+def saveFile( file, path = "default" ):
+    # We will have an external service for this
+    store_params = {
+        "location" : "s3",
+        "path" : "ofertapp/" + path + "/"
+    }
+
+    try:
+        # Getting file link
+        filelink = client.upload(
+            file_obj = file,
+            store_params = store_params
+        )
+    except Exception as e:
+        print(e)
+        return None
+
+    # Data will be saved in an external database at this point
+    return filelink.url
 
 def getFileType( file ):
     print( file )

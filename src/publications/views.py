@@ -4,7 +4,7 @@ from django.db.models import Count
 from publications.serializers import PublicationSerializer, CategorySerializer, OfferSerializer, \
     OfferCreateSerializer, PublicationSupportSerializer, PublicationCreateSerializer
 from transactions.services import placeBid, revokeBid
-
+from util.services import saveFile
 from publications.models import Publication, Category, Offer
 from .services import checkOfferService, checkPublicationService
 from transactions.services import acceptBidOffer, notify
@@ -69,6 +69,10 @@ class PublicationView( APIView ):
             for i in range(len(supportsData)):
                 supportDescription = supportsDescriptions[i]
                 supportFile = supportsData[i]
+
+                # Save support file in external storage
+                supportFile = saveFile(supportFile, "publication_supports")
+                
                 supportType = supportsTypes[i]
 
                 supportSerializer = PublicationSupportSerializer(data={

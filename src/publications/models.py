@@ -183,9 +183,8 @@ class PublicationSupport(models.Model):
         choices=TypeChoices.choices,
         db_column="sopType"
     ) 
-    data = models.FileField(
-        upload_to= 'publications_support_data', 
-        blank=False, null=False,
+    data = models.URLField(
+        max_length=200, null=False,
         db_column="sopData"
     )
     createdAt = models.DateTimeField(

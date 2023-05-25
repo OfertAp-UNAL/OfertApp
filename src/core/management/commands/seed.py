@@ -7,7 +7,11 @@ from notifications.models import Notification
 from reports.models import Report, ReportSupport
 from django.core.management.base import BaseCommand
 from django.contrib.auth.hashers import make_password
-    
+
+# Useful constants
+DEFAULT_SUPPORT_URL = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+DEFAULT_PROFILE_URL = "https://cdn.filestackcontent.com/pLDF5BZTP6ASwiobbC8W"
+
 class Command(BaseCommand):
     
     help = "Seed elements to database"
@@ -182,7 +186,7 @@ class Command(BaseCommand):
         _ = [
             PublicationSupport.objects.create(
                 type = 'VIDEO',
-                data = "defaultSupport.mp4",
+                data = DEFAULT_SUPPORT_URL,
                 description = fake.text(),
                 publication = publications[
                     fake.random_int(min=0, max=len(publications) - 1)
@@ -300,8 +304,8 @@ class Command(BaseCommand):
                 report = reports[
                     fake.random_int(min=0, max=len(reports) - 1)
                 ],
-                type = "IMAGE",
-                data = "defaultProfile.png",
+                type = "VIDEO",
+                data = DEFAULT_SUPPORT_URL,
                 body = fake.text( max_nb_chars=45 )
             )
             for _ in range(number*10)

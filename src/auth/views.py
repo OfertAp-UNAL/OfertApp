@@ -5,8 +5,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from auth.serializers import UserSerializer
 from auth.token.serializers import CustomTokenPairSerializer
+from util.services import saveFile
 from .token.customTokens import emailTokenGenerator, resetPasswordTokenGenerator
 from .models import User
+from datetime import datetime, timedelta
+import dateutil.parser as parser
 
 from auth.services import AccountCheckService, checkUserPermissions
 accountService = AccountCheckService()
@@ -102,12 +105,11 @@ class RegisterView( APIView ):
             "idenIdType" : request.data.get("idenIdType"),
         }
 
-        # TODO: Read type by means of the property: content_type
-
         # Get profile picture from files array
         if "profilePicture" in request.FILES:
-            data["profilePicture"] = request.FILES["profilePicture"]
-            
+            data["profilePicture"] = saveFile(
+                request.FILES["profilePicture"], "profile_pictures"
+            )
 
         # Hash password
         data["password"] = make_password(data["password"])
@@ -115,6 +117,14 @@ class RegisterView( APIView ):
 
         serializer = UserSerializer(data=data)
 
+        # Check if user is not underage
+        if data["birthdate"] is not None:
+            if parser.parse( data["birthdate"] ) > datetime.today() - timedelta(days=18*365):
+                return Response(status = 200, data = {
+                    "status" : "error",
+                    "error" : "You must be at least 18 years old"
+                })
+            
         if serializer.is_valid():
             
             # Verify user's identity
@@ -189,7 +199,9 @@ class UserInfoView( APIView ):
 
             # Get profile picture from files array
             if "profilePicture" in request.FILES:
-                data["profilePicture"] = request.FILES["profilePicture"]
+                data["profilePicture"] = saveFile(
+                    request.FILES["profilePicture"], "profile_pictures"
+                )
 
             serializer = UserSerializer(
                 user,

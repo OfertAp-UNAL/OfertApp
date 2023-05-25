@@ -89,13 +89,11 @@ class ReportSupport(models.Model):
         db_column="repSopType"
     )
     body = models.TextField(
-        max_length=255,
-        null=True,
+        max_length=255, null=True,
         db_column="repSopBody"
     )
-    data = models.FileField(
-        upload_to='reports_support_data',
-        blank=False, null=True,
+    data = models.URLField(
+        max_length=200, null=False,
         db_column="repSopData"
     )
     createdAt = models.DateTimeField(

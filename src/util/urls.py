@@ -8,5 +8,6 @@ urlpatterns = [
     
     # Statistical info of user's actions in the app
     path( "statistics/", StatisticView.as_view() ),
-    path( "conversion/<int:copValue>/", CurrencyTranslationView.as_view() )
+    path( "conversion/<int:copValue>/", CurrencyTranslationView.as_view() ),
+    path( "filetest/", CurrencyTranslationView.as_view() )
 ]

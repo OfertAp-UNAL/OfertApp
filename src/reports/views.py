@@ -5,6 +5,7 @@ from reports.serializers import ReportSerializer, ReportSupportSerializer, Repor
 from reports.models import Report, ReportSupport
 from publications.models import Publication
 from auth.services import checkUserPermissions
+from util.services import saveFile
 
 class ReportView( APIView):
     def post( self,request,publicationId = None ):
@@ -151,10 +152,24 @@ class ReportSupportView( APIView):
             })
         
         body = request.data.get("body", None)
+
+        # Getting file
+        file = request.FILES.get("data", None)
+
+        if file is not None:
+            # Save file
+            fileData = saveFile(file, "report_supports")
+
+            if fileData is None:
+                return Response(status = 200, data = {
+                    "status" : "error",
+                    "error" : "Invalid file"
+                })
+
         # Get data from request
         data = {
             "type" : request.data.get("type"), 
-            "data" : request.data.get("data"), 
+            "data" : fileData, 
             "user" : user.id,
             "report" : reportId      
         }   

@@ -14,3 +14,4 @@ numpy==1.21.6
 mercadopago==2.2.0
 gunicorn
 django-apscheduler==0.6.2
+filestack-python==3.5.0
