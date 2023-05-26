@@ -33,12 +33,12 @@ class MunicipalityService():
                         "status" : "error",
                         "error" :  response.status_code
                     })
-        except requests.exceptions.RequestException as e:
+        except Exception:
             return Response( 
                     status = 200,
                     data = {
                         "status" : "error",
-                        "error" :  e.strerror
+                        "error" : "Unable to get requested data"
                     })
         
         json = response.json()
@@ -145,7 +145,7 @@ class CurrencyTranslationService():
             
             json = response.json()
             self.copReference = json["data"]["USD"]["value"]
-        except requests.exceptions.RequestException as e:
+        except Exception:
             self.copReference = 0
     
     def convert(self, value):
@@ -211,5 +211,31 @@ def saveFile( file, path = "default" ):
     # Data will be saved in an external database at this point
     return filelink.url
 
-def getFileType( file ):
-    print( file )
+def checkFileExtension( file ):
+
+    if file is None: 
+        return "File is empty", None
+
+    size = file.size
+
+    # Get File extension
+    extension = file.name.split(".")[-1]
+    fileType = None
+
+    # Search for file type
+    for type in settings.ALLOWED_FILE_EXTENSIONS:
+        if extension in settings.ALLOWED_FILE_EXTENSIONS[ type ]:
+            fileType = type
+            break
+    
+    # Check if file is an image
+    if fileType is None:
+        return "File extension not allowed", None
+    
+    # Recall size is in bytes
+    # Check if file is too big
+    if size > settings.ALLOWED_FILE_SIZE[ fileType ] * 1024 * 1024:
+        return f"[{fileType}] size is too big, max size is \
+            {str(settings.ALLOWED_FILE_SIZE[ fileType ])}\ MBs", None
+    
+    return None, fileType

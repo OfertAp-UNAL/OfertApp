@@ -4,10 +4,11 @@ from django.db.models import Count
 from publications.serializers import PublicationSerializer, CategorySerializer, OfferSerializer, \
     OfferCreateSerializer, PublicationSupportSerializer, PublicationCreateSerializer
 from transactions.services import placeBid, revokeBid
-from util.services import saveFile
+from util.services import saveFile, checkFileExtension
 from publications.models import Publication, Category, Offer
 from .services import checkOfferService, checkPublicationService
-from transactions.services import acceptBidOffer, notify
+from transactions.services import acceptBidOffer
+import decimal
 
 class PublicationView( APIView ):
     def post( self, request ):
@@ -19,7 +20,7 @@ class PublicationView( APIView ):
         if not user.is_authenticated:
             return Response(status = 200, data = {
                 "status" : "error",
-                "errors" : "You must be logged in to perform this action"
+                "error" : "You must be logged in to perform this action"
             })
 
         # Get data from request
@@ -32,13 +33,21 @@ class PublicationView( APIView ):
         # Get supports descriptions for supports
         supportsDescriptions = request.data.getlist("supportsDescriptions")
 
-        # Get types array for supports
-        supportsTypes = request.data.getlist("supportsTypes")
+        # Get minimum offer
+        minOffer = request.data.get("minOffer", 0)
+
+        try:
+            minOffer = decimal.Decimal(minOffer)
+        except ValueError:
+            return Response(status = 200, data = {
+                "status" : "error",
+                "error" : "Invalid minimum offer"
+            })
 
         # Check additional publication business logic
         errorResponse = checkPublicationService(
-            user, priority, endDate,
-            supportsData, supportsDescriptions, supportsTypes
+            user, priority, endDate, minOffer,
+            supportsData, supportsDescriptions
             )
         if errorResponse is not None:
             return errorResponse
@@ -47,7 +56,7 @@ class PublicationView( APIView ):
         data = {
             "title" : request.data.get("title"),
             "description" : request.data.get("description"),
-            "minOffer" : request.data.get("minOffer"),
+            "minOffer" : minOffer,
             "category" : request.data.get("category"),
             "user" : user.id,
         }
@@ -69,16 +78,23 @@ class PublicationView( APIView ):
             for i in range(len(supportsData)):
                 supportDescription = supportsDescriptions[i]
                 supportFile = supportsData[i]
+                
+                message, fileType = checkFileExtension(supportFile)
+
+                if message is not None:
+                    return Response(status = 200, data = {
+                        "status" : "error",
+                        "error" : message
+                    })
 
                 # Save support file in external storage
-                supportFile = saveFile(supportFile, "publication_supports")
-                
-                supportType = supportsTypes[i]
+                # supportFile = saveFile(supportFile, "publication_supports")
+                supportFile = "https://cdn.filestackcontent.com/5QZQZQZQZQZQZQZQZQZQZ"
 
                 supportSerializer = PublicationSupportSerializer(data={
                     "publication" : publication.id,
                     "description" : supportDescription,
-                    "type" : supportType,
+                    "type" : fileType,
                     "data" : supportFile
                 })
 
@@ -87,7 +103,7 @@ class PublicationView( APIView ):
                 else:
                     return Response(status = 200, data = {
                         "status" : "error",
-                        "errors" : supportSerializer.errors
+                        "error" : supportSerializer.errors
                     })
                 
             return Response(status = 200, data = {
@@ -97,24 +113,26 @@ class PublicationView( APIView ):
         
         return Response(status = 200, data = {
             "status" : "error", 
-            "errors" : serializer.errors
+            "error" : serializer.errors
         })
     
     def get(self, request, publicationId = None):
+        
         if publicationId is not None:
             try:
                 publication = Publication.objects.get(pk=publicationId)
                 data = PublicationSerializer(publication, context = {
                         "request" : request
                     }).data
+                
                 return Response(status = 200, data = {
                     "status" : "success",
                     "data" : data
                 })
-            except Publication.DoesNotExist:
+            except Exception:
                 return Response(status = 200, data = {
                     "status" : "error",
-                    "errors" : "Invalid publication id"
+                    "error" : "Invalid publication id"
                 })
 
         # Get parameters of filtering
@@ -215,7 +233,7 @@ class CategoryView( APIView ):
         
         return Response(status = 200, data = {
             "status": "error",
-            "errors" : serializer.errors
+            "error" : serializer.errors
         })
     
     def get(self, request):
@@ -235,14 +253,14 @@ class OfferView( APIView ):
         if user is None or not user.is_authenticated:
             return Response(status = 200, data = {
                 "status" : "error",
-                "errors" : "You must be logged in to make an offer"
+                "error" : "You must be logged in to make an offer"
             })
         
         # All offers must belong to a publication
         if publicationId is None:
             return Response(status = 200, data = {
                 "status" : "error",
-                "errors" : "Invalid publication id"
+                "error" : "Invalid publication id"
             })
         
         amount = request.data.get("amount")
@@ -253,7 +271,7 @@ class OfferView( APIView ):
         except ValueError:
             return Response(status = 200, data = {
                 "status" : "error",
-                "errors" : "Invalid amount"
+                "error" : "Invalid amount"
             })
 
         # Check if publication exists
@@ -262,7 +280,7 @@ class OfferView( APIView ):
         except Publication.DoesNotExist:
             return Response(status = 200, data = {
                 "status" : "error",
-                "errors" : "Invalid publication id"
+                "error" : "Invalid publication id"
             })
 
         # Check offer
@@ -320,7 +338,7 @@ class OfferView( APIView ):
             status = 200,
             data = {
                 "status" : "error",
-                "errors" : serializer.errors
+                "error" : serializer.errors
             }
         )
     
@@ -342,7 +360,7 @@ class OfferView( APIView ):
                     status=200,
                     data = {
                         "status" : "error",
-                        "errors" : "Invalid publication Id"
+                        "error" : "Invalid publication Id"
                     })
         
         offers = Offer.objects.all()

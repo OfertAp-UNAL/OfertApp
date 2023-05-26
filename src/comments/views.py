@@ -11,7 +11,7 @@ class CommentView( APIView ):
         try:
             publication = Publication.objects.get(pk=publicationId)
         except Publication.DoesNotExist:
-            return Response(status = 400, data = {
+            return Response(status = 200, data = {
                 "status" : "error",
                 "error" : "Invalid publication id"
             })
@@ -27,7 +27,7 @@ class CommentView( APIView ):
                     }).data
                 })
             except Comment.DoesNotExist:
-                return Response(status = 400, data = {
+                return Response(status = 200, data = {
                     "status" : "error",
                     "error" : "Invalid comment id"
                 })
@@ -66,9 +66,9 @@ class CommentView( APIView ):
                 "data" : serializer.data
             })
         
-        return Response(status = 400, data = {
+        return Response(status = 200, data = {
             "status" : "error",
-            "errors" : serializer.errors
+            "error" : serializer.errors
         })
 
 class ReactionView( APIView ):
@@ -151,7 +151,7 @@ class ReactionView( APIView ):
                 "data" : serializer.data
             })
         
-        return Response(status = 400, data = {
+        return Response(status = 200, data = {
             "status" : "error",
-            "errors" : serializer.errors
+            "error" : serializer.errors
         })

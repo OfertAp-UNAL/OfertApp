@@ -5,8 +5,7 @@ from django.db.models import DecimalField
 from django.db.models.functions import TruncDay, TruncWeek, TruncMonth, TruncYear, Coalesce
 from transactions.models import Account, Transaction
 from comments.models import Comment, Reaction
-from publications.models import Publication, Offer
-from util.services import saveFile
+from publications.models import Publication
 from datetime import datetime, timedelta
 
 service = MunicipalityService()

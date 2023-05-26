@@ -79,8 +79,8 @@ def checkOfferService(user, amount, publication):
     # Return None if not issue found
 
 def checkPublicationService(
-        user, prioritary, endDate,
-        supportsData, supportsDescriptions, supportsTypes
+        user, prioritary, endDate, minOffer,
+        supportsData, supportsDescriptions
     ):
     # Getting user permissions
     userPermissions = checkUserPermissions(user)
@@ -106,8 +106,7 @@ def checkPublicationService(
             })
     
     # Only VIP users will be able to set a publication's enddate
-    if endDate:
-        if not user.vipState:
+    if endDate is not None and not user.vipState:
             return Response(status = 200, data = {
                 "status" : "error",
                 "error" : "You can't set a publication end date if you are not a VIP member"
@@ -116,7 +115,7 @@ def checkPublicationService(
     # Check if support data is valid
 
     # First all arrays should have the same size
-    if len(supportsData) != len(supportsDescriptions) or len(supportsData) != len(supportsTypes):
+    if len(supportsData) != len(supportsDescriptions):
         return Response(status = 200, data = {
             "status" : "error",
             "error" : "Invalid supports data, all arrays should have the same size"
@@ -127,6 +126,21 @@ def checkPublicationService(
         return Response(status = 200, data = {
             "status" : "error",
             "error" : "At least one support is required"
+        })
+
+    # Check if enddate is in future
+    if endDate is not None and endDate <= datetime.datetime.now() + datetime.timedelta(hours = 12):
+        return Response(status = 200, data = {
+            "status" : "error",
+            "error" : "Invalid end date, must be at least half day apart"
+        })
+
+    # Check if minimum offer is valid
+    if minOffer <= settings.MINIMUM_OFFER_AMOUNT:
+        return Response(status = 200, data = {
+            "status" : "error",
+            "error" : "Invalid minimum offer, must be greater than " + 
+            str(settings.MINIMUM_OFFER_AMOUNT)
         })
 
 def checkPublicationExpiration():

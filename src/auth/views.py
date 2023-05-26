@@ -5,9 +5,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from auth.serializers import UserSerializer
 from auth.token.serializers import CustomTokenPairSerializer
-from util.services import saveFile
+from util.services import saveFile, checkFileExtension
 from .token.customTokens import emailTokenGenerator, resetPasswordTokenGenerator
 from .models import User
+from util.services import notify
 from datetime import datetime, timedelta
 import dateutil.parser as parser
 
@@ -82,7 +83,7 @@ class LogoutView( APIView ):
                 "status" : "success"
             })
         
-        return Response(status = 401, data = {
+        return Response(status = 200, data = {
             "status" : "error",
             "error" : "You are not logged in"
         })
@@ -107,9 +108,27 @@ class RegisterView( APIView ):
 
         # Get profile picture from files array
         if "profilePicture" in request.FILES:
-            data["profilePicture"] = saveFile(
-                request.FILES["profilePicture"], "profile_pictures"
-            )
+            profileFile = request.FILES["profilePicture"]
+
+            # Check file metadata
+            message, fileType = checkFileExtension( profileFile )
+
+            if message is not None:
+                return Response(status = 200, data = {
+                    "status" : "error",
+                    "error" : message
+                })
+            
+            if fileType != "IMAGE":
+                return Response(status = 200, data = {
+                    "status" : "error",
+                    "error" : "Profile Picture must be an image"
+                })
+            
+            data["profilePicture"] = "https://cdn.filestackcontent.com/pLDF5BZTP6ASwiobbC8W"
+            # data["profilePicture"] = saveFile(
+            #     profileFile, "profile_pictures"
+            # )
 
         # Hash password
         data["password"] = make_password(data["password"])
@@ -141,6 +160,13 @@ class RegisterView( APIView ):
                 
                 # Give this user a token, but next time he will have to verify his account
                 refresh = CustomTokenPairSerializer.get_token(user)
+
+                # All OK, lets send a kindly message to the user
+                notify(
+                    user,
+                    "Bienvenido a OfertApp!",
+                    "Esperamos serte de ayuda en tu busqueda de las mejores ofertas!"
+                )
 
                 return Response(status = 200, data = {
                     "status" : "success",
@@ -197,6 +223,11 @@ class UserInfoView( APIView ):
                 "idenIdType" : request.data.get("idenIdType"),
             }
 
+            # Iterate over dictionary keys and delete nulls, since this is a PATCH request
+            for key in list(data.keys()):
+                if data[key] is None:
+                    del data[key]
+
             # Get profile picture from files array
             if "profilePicture" in request.FILES:
                 data["profilePicture"] = saveFile(
@@ -205,7 +236,7 @@ class UserInfoView( APIView ):
 
             serializer = UserSerializer(
                 user,
-                data=request.data,
+                data=data,
                 partial=True,
             )
 

@@ -41,7 +41,7 @@ class PublicationCreateSerializer(serializers.ModelSerializer):
         model = Publication
         fields = (
             'title', 'description', 'minOffer', 'endDate', 'category',
-            'user', 'priority', 'user')
+            'user', 'priority', 'user', 'id')
         
 class PublicationSerializer(serializers.ModelSerializer):
     class Meta:

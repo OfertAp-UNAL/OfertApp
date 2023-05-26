@@ -234,6 +234,20 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Allowed FILE extensions
+ALLOWED_FILE_EXTENSIONS = {
+    "IMAGE" : ["jpg", "gif", "png", "jpeg", "bmp", "svg", "webp"],
+    "VIDEO" : ["mp4", "webm"],
+    "DOCUMENT" : ["pdf"]
+}
+
+ALLOWED_FILE_SIZE = {
+    "IMAGE" : 10, # MB
+    "VIDEO" : 30, # MB
+    "DOCUMENT" : 10 # MB
+}
+
+MINIMUM_OFFER_AMOUNT = decimal.Decimal(env("MINIMUM_OFFER_AMOUNT"))
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/

@@ -1,4 +1,5 @@
 from transactions.services import rechargeBalance, withdrawBalance
+from django.conf import settings
 
 # Check payment data from Mercado Pago
 def checkPayment( user, paymentData ):
@@ -8,7 +9,7 @@ def checkPayment( user, paymentData ):
         return "User is not authenticated"
     
     # Check transaction amount info
-    if paymentData["transaction_amount"] < 0:
+    if paymentData["transaction_amount"] < settings.MINIMUM_OFFER_AMOUNT:
         return "Invalid transaction amount"
     
     payer_data = paymentData["payer"]
@@ -41,6 +42,10 @@ def checkWithdrawal( user, amount ):
     if user.account.balance < amount:
         return "User has not enough balance"
     
+    # At least the minimum offer amount is required to make a withdrawal
+    if amount < settings.MINIMUM_OFFER_AMOUNT:
+        return "Invalid withdrawal amount, must be greater than " + str(settings.MINIMUM_OFFER_AMOUNT)
+
     return None
 
 # Register withdrawal as transaction
