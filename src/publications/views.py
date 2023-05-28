@@ -88,8 +88,7 @@ class PublicationView( APIView ):
                     })
 
                 # Save support file in external storage
-                # supportFile = saveFile(supportFile, "publication_supports")
-                supportFile = "https://cdn.filestackcontent.com/5QZQZQZQZQZQZQZQZQZQZ"
+                supportFile = saveFile(supportFile, "publication_supports")
 
                 supportSerializer = PublicationSupportSerializer(data={
                     "publication" : publication.id,

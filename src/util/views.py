@@ -1,6 +1,6 @@
 from rest_framework.views import APIView, Response
-from .services import MunicipalityService, CurrencyTranslationService
-from django.db.models import Sum, Count, F, Value, Case, When
+from .services import MunicipalityService
+from django.db.models import Sum, Count, Max, F, Value, Case, When
 from django.db.models import DecimalField
 from django.db.models.functions import TruncDay, TruncWeek, TruncMonth, TruncYear, Coalesce
 from transactions.models import Account, Transaction
@@ -155,7 +155,7 @@ class StatisticView( APIView ):
                 "id", "title"
             ).annotate(
                 total = Coalesce(
-                    Sum("offers__amount") if viewOffersBy == "money" else Count("offers__id"),
+                    Max("offers__amount") if viewOffersBy == "money" else Count("offers__id"),
                     Value(0),
                     output_field=DecimalField()
                 )
