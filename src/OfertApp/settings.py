@@ -146,7 +146,7 @@ DATABASES = {
         'HOST' : env("DB_HOST"),
         'PORT' : env("DB_PORT"),
         'TEST' : {
-            'NAME' : env("DB_NAME"),
+            'NAME' : env("DB_NAME"),            
         }
     }
 }
