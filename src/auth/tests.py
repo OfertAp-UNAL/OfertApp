@@ -70,11 +70,25 @@ class UserInfoTests(APITestCase):
 
     def test_get_info(self):
         url = '/api/v1/auth/logout/'
-        auth_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjg1MDMyMDY3LCJpYXQiOjE2ODUwMzAyNjcsImp0aSI6Ijg5NDJkNWM1NGYxZjQ5YzE5MWQ0YzNiMWJmNWFiMjBhIiwidXNlcl9pZCI6MTAwMDgzMzEwNywidXNlcm5hbWUiOiJlZGdvbnphbGV6ZGkiLCJlbWFpbCI6InRlc3RlZGdkMTIzQGdtYWlsLmNvbSIsInZpcFN0YXRlIjpmYWxzZSwidmlwUHViQ291bnQiOjB9.eux8kCIRaN1KmgeYCUiA0HtcIxmHRL1RFrapOY11Thk'
+        auth_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjg1MjQyOTQ3LCJpYXQiOjE2ODUyNDExNDcsImp0aSI6IjYwMjY1ZjczZWVjNDQ4YjU4NDhiMTI0OTZhMzA4ZGZmIiwidXNlcl9pZCI6MTAwMDgzMzEwNywidXNlcm5hbWUiOiJlZGdvbnphbGV6ZGkiLCJlbWFpbCI6InRlc3RlZGdkMTIzQGdtYWlsLmNvbSIsInZpcFN0YXRlIjpmYWxzZSwidmlwUHViQ291bnQiOjB9.C7ArV6orGRncUN-AA4HwoU8I7E-OAy-q161htccmZDU'
         headers = {'Authorization': f'Token {auth_token}'}
         response = self.client.get(url, headers=headers)
         print(response.content.decode())
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-    
+class SendResetPasswordTests(APITestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_post_sendResetPassword(self):
+        url = '/api/v1/auth/recover-password/'
+        data = {'email': 'prueba@gmail.com',
+                }
+        response = self.client.post(url, data=data, format='json')
+        print(response.content.decode())
+        self.assertEqual(response.status_code, status.HTTP_200_OK)    
+
+
+
