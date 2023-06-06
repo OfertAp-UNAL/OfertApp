@@ -18,7 +18,7 @@ class SettingsView( APIView ):
             status = 200,
             data = {
                 "status": "error",
-                "error": "User not authenticated"
+                "error": "Debes iniciar sesión para realizar esta acción"
             }
         )
 

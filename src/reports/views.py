@@ -17,12 +17,12 @@ class ReportView( APIView):
             except Publication.DoesNotExist:
                 return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "Invalid publication id"
+                    "error" : "ID de publicación inválido"
                 })        
         else:
             return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "Invalid publication id"
+                    "error" : "ID de publicación inválido"
                 })
 
         # Get user from request
@@ -32,7 +32,7 @@ class ReportView( APIView):
         if not user.is_authenticated:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You must be logged in to perform this action"
+                "error" : "Debes iniciar sesión para realizar esta acción"
             })
 
         # Getting user permissions
@@ -42,14 +42,14 @@ class ReportView( APIView):
         if userPermissions['isAdmin']:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "Admins can't make reports"
+                "error" : "Los administradores no pueden reportar publicaciones"
             })
 
         # Check if user isn't placing reports for himself
         if publication.user.id == user.id:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You can't report yourself"
+                "error" : "No puedes reportar tus propias publicaciones"
             })
     
         # Get data from request
@@ -85,7 +85,7 @@ class ReportView( APIView):
         if not user.is_authenticated:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You must be logged in to perform this action"
+                "error" : "Debes iniciar sesión para realizar esta acción"
             })
 
         # Getting user permissions
@@ -120,12 +120,12 @@ class ReportSupportView( APIView):
             except Report.DoesNotExist:
                 return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "Invalid report id"
+                    "error" : "ID de reporte inválido"
                 })        
         else:
             return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "Invalid report id"
+                    "error" : "ID de reporte inválido"
                 })
         # Get user from request
         user = request.user
@@ -134,7 +134,7 @@ class ReportSupportView( APIView):
         if not user.is_authenticated:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You must be logged in to perform this action"
+                "error" : "Debes iniciar sesión para realizar esta acción"
             })
 
         # Getting user permissions
@@ -148,7 +148,7 @@ class ReportSupportView( APIView):
         if not canAddSupport:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You are not supossed to add data to this support"
+                "error" : "No puedes agregar soporte a este reporte"
             })
         
         body = request.data.get("body", None)
@@ -173,7 +173,7 @@ class ReportSupportView( APIView):
             if fileData is None:
                 return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "Invalid file"
+                    "error" : "Error al guardar el archivo"
                 })
 
         # Get data from request
@@ -211,12 +211,12 @@ class ReportSupportView( APIView):
             except Report.DoesNotExist:
                 return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "Invalid report id"
+                    "error" : "ID de reporte inválido"
                 })        
         else:
             return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "Invalid report id"
+                    "error" : "ID de reporte inválido"
                 })
         # Get user from request
         user = request.user
@@ -225,7 +225,7 @@ class ReportSupportView( APIView):
         if not user.is_authenticated:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You must be logged in to perform this action"
+                "error" : "Debes iniciar sesión para realizar esta acción"
             })
 
         # Getting user permissions
@@ -239,7 +239,7 @@ class ReportSupportView( APIView):
         if not canSeeReport:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You are not supossed to see this report data"
+                "error" : "Debes iniciar sesión para realizar esta acción"
             })
         
         reportSupport = ReportSupport.objects.filter(

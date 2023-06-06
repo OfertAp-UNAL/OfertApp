@@ -1,3 +1,4 @@
+import datetime
 import requests
 from django.conf import settings
 from rest_framework.response import Response
@@ -38,7 +39,7 @@ class MunicipalityService():
                     status = 200,
                     data = {
                         "status" : "error",
-                        "error" : "Unable to get requested data"
+                        "error" : "Imposible obtener información de la API de municipios"
                     })
         
         json = response.json()
@@ -214,7 +215,7 @@ def saveFile( file, path = "default" ):
 def checkFileExtension( file ):
 
     if file is None: 
-        return "File is empty", None
+        return "El archivo está vacío", None
 
     size = file.size
 
@@ -230,12 +231,15 @@ def checkFileExtension( file ):
     
     # Check if file is an image
     if fileType is None:
-        return "File extension not allowed", None
+        return "La extensión del archivo no está permitida: " + fileType, None
     
     # Recall size is in bytes
     # Check if file is too big
     if size > settings.ALLOWED_FILE_SIZE[ fileType ] * 1024 * 1024:
-        return f"[{fileType}] size is too big, max size is \
-            {str(settings.ALLOWED_FILE_SIZE[ fileType ])}\ MBs", None
+        return f"El tamaño de [{fileType}] es demasiado grande, el máximo tamaño es \
+            {str(settings.ALLOWED_FILE_SIZE[ fileType ])}\ Bs", None
     
     return None, fileType
+
+def stringToDatetime( string ):
+    return datetime.datetime.strptime(string, '%Y-%m-%dT%H:%M:%S.%fZ')

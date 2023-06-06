@@ -4,6 +4,7 @@ from publications.models import Publication
 from django.conf import settings
 from auth.services import checkUserPermissions
 from transactions.services import finishBid
+from util.services import stringToDatetime
 
 import datetime
 
@@ -16,49 +17,49 @@ def checkOfferService(user, amount, publication):
     if userPermissions['isAdmin']:
         return Response(status = 200, data = {
             "status" : "error",
-            "error" : "Admins can't make offers"
+            "error" : "Los admins no pueden realizar ofertas"
         })
 
     # Check if amount is valid
     if amount < 0:
         return Response(status = 200, data = {
             "status" : "error",
-            "error" : "Invalid amount"
+            "error" : "Monto inválido"
         })
 
     # Check if publication is available
     if not publication.available:
         return Response(status = 200, data = {
             "status" : "error",
-            "error" : "This publication is not available"
+            "error" : "Ésta publicación no está disponible"
         })
     
     # Check if amount is greater than minimum offer
     if amount < publication.minOffer:
         return Response(status = 200, data = {
             "status" : "error",
-            "error" : "The amount must be greater than the minimum offer"
+            "error" : "El monto debe ser mayor a la oferta mínima"
         })
 
     # Check if user is not blocked
     if user.blocked:
         return Response(status = 200, data = {
             "status" : "error",
-            "error" : "You are blocked"
+            "error" : "Estás bloqueado, no puedes realizar ofertas"
         })
     
     # Check if user is not the owner of the publication
     if user.id == publication.user.id:
         return Response(status = 200, data = {
             "status" : "error",
-            "error" : "You can't make an offer to your own publication"
+            "error" : "No puedes realizar ofertas en tus propias publicaciones"
         })
     
     # Check if user has enough money
     if user.account.balance < amount:
         return Response(status = 200, data = {
             "status" : "error",
-            "error" : "You don't have enough money"
+            "error" : "No tienes suficiente dinero para realizar esta oferta"
         })
     
     # Check if this offer is the highest offer
@@ -67,13 +68,13 @@ def checkOfferService(user, amount, publication):
     except Offer.DoesNotExist:
         return Response(status = 200, data = {
             "status" : "error",
-            "error" : "Invalid publication id"
+            "error" : "ID de publicación inválido"
         })
 
     if publicationOffers and publicationOffers[0].amount > amount:
         return Response(status = 200, data = {
             "status" : "error",
-            "error" : "This offer does not have the highest amount"
+            "error" : "Ya existe una oferta mayor a la tuya"
         })
     
     # Return None if not issue found
@@ -89,7 +90,7 @@ def checkPublicationService(
     if userPermissions['isAdmin']:
         return Response(status = 200, data = {
             "status" : "error",
-            "error" : "Admins can't make publications"
+            "error" : "Los admins no pueden realizar publicaciones"
         })
     
     # Check if user is able to make a prioritary publication
@@ -97,19 +98,19 @@ def checkPublicationService(
         if not user.vipState:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You can't powerup a publication if you are not a VIP member"
+                "error" : "No puedes realizar una publicación prioritaria si no eres VIP"
             })
         if user.vipPubCount <= 0:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You don't have more prioritary publications slots"
+                "error" : "No puedes realizar una publicación prioritaria si no tienes publicaciones prioritarias disponibles"
             })
     
     # Only VIP users will be able to set a publication's enddate
     if endDate is not None and not user.vipState:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You can't set a publication end date if you are not a VIP member"
+                "error" : "No puedes establecer una fecha de finalización si no eres VIP"
             })
     
     # Check if support data is valid
@@ -118,28 +119,28 @@ def checkPublicationService(
     if len(supportsData) != len(supportsDescriptions):
         return Response(status = 200, data = {
             "status" : "error",
-            "error" : "Invalid supports data, all arrays should have the same size"
+            "error" : "Los datos de los soportes no son válidos"
         })
 
     # Also, at least one support is required
     if len(supportsData) == 0:
         return Response(status = 200, data = {
             "status" : "error",
-            "error" : "At least one support is required"
+            "error" : "Se requiere al menos un soporte"
         })
 
     # Check if enddate is in future
-    if endDate is not None and endDate <= datetime.datetime.now() + datetime.timedelta(hours = 12):
+    if endDate is not None and stringToDatetime(endDate) <= datetime.datetime.now() + datetime.timedelta(hours = 12):
         return Response(status = 200, data = {
             "status" : "error",
-            "error" : "Invalid end date, must be at least half day apart"
+            "error" : "La fecha de finalización debe ser al menos 12 horas en el futuro"
         })
 
     # Check if minimum offer is valid
     if minOffer <= settings.MINIMUM_OFFER_AMOUNT:
         return Response(status = 200, data = {
             "status" : "error",
-            "error" : "Invalid minimum offer, must be greater than " + 
+            "error" : "Monto de oferta mónimo inválido, debe ser mayor a " + 
             str(settings.MINIMUM_OFFER_AMOUNT)
         })
 

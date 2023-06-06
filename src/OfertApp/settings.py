@@ -224,7 +224,7 @@ FILESTACK_API_KEY = env("FILESTACK_API_KEY")
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-co'
 
 TIME_ZONE = 'UTC'
 

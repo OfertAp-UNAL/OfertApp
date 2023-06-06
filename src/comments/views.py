@@ -13,7 +13,7 @@ class CommentView( APIView ):
         except Publication.DoesNotExist:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "Invalid publication id"
+                "error" : "ID de publicación inválido"
             })
         
         if commentId is not None:
@@ -29,7 +29,7 @@ class CommentView( APIView ):
             except Comment.DoesNotExist:
                 return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "Invalid comment id"
+                    "error" : "ID de comentario inválido"
                 })
         
         # List all comments in publication
@@ -47,7 +47,7 @@ class CommentView( APIView ):
         if not request.user.is_authenticated:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You must be logged in to perform this action"
+                "error" : "Debes iniciar sesión para realizar esta acción"
             })
         
         data = {
@@ -80,7 +80,7 @@ class ReactionView( APIView ):
         except Comment.DoesNotExist:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "Invalid comment id"
+                "error" : "ID de comentario inválido"
             })
         
         return Response(status = 200, data = {
@@ -99,7 +99,7 @@ class ReactionView( APIView ):
         if not user.is_authenticated:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You must be logged in to perform this action"
+                "error" : "Debes iniciar sesión para realizar esta acción"
             })
         
         try:
@@ -107,7 +107,7 @@ class ReactionView( APIView ):
         except Comment.DoesNotExist:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "Invalid comment id"
+                "error" : "ID de comentario inválido"
             })
         
         # Get reaction data

@@ -33,7 +33,7 @@ class MunicipalityView( APIView ):
                 status = 200,
                 data = {
                     "status": "error",
-                    "error": "Invalid parameters"
+                    "error": "Parámetros inválidos"
                 }
             )
 
@@ -183,7 +183,7 @@ class StatisticView( APIView ):
             status = 200,
             data = {
                 "status": "error",
-                "error": "User not authenticated"
+                "error": "Usuario no autenticado"
             }
         )
     
@@ -195,7 +195,7 @@ class CurrencyTranslationView( APIView ):
                 status = 200,
                 data = {
                     "status": "error",
-                    "error": "Currency not specified"
+                    "error": "Moneda no especificada"
                 }
             )
         else:

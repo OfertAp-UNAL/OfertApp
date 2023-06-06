@@ -20,7 +20,7 @@ class PublicationView( APIView ):
         if not user.is_authenticated:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You must be logged in to perform this action"
+                "error" : "Debes estar logueado para ejecutar ésta acción"
             })
 
         # Get data from request
@@ -41,7 +41,7 @@ class PublicationView( APIView ):
         except ValueError:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "Invalid minimum offer"
+                "error" : "Oferta mínima inválida"
             })
 
         # Check additional publication business logic
@@ -131,7 +131,7 @@ class PublicationView( APIView ):
             except Exception:
                 return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "Invalid publication id"
+                    "error" : "ID de publicación inválido"
                 })
 
         # Get parameters of filtering
@@ -252,14 +252,14 @@ class OfferView( APIView ):
         if user is None or not user.is_authenticated:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You must be logged in to make an offer"
+                "error" : "Debes estar logueado para realizar ésta acción"
             })
         
         # All offers must belong to a publication
         if publicationId is None:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "Invalid publication id"
+                "error" : "ID de publicación inválido"
             })
         
         amount = request.data.get("amount")
@@ -270,7 +270,7 @@ class OfferView( APIView ):
         except ValueError:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "Invalid amount"
+                "error" : "Monto inválido"
             })
 
         # Check if publication exists
@@ -279,7 +279,7 @@ class OfferView( APIView ):
         except Publication.DoesNotExist:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "Invalid publication id"
+                "error" : "ID de publicación inválido"
             })
 
         # Check offer
@@ -359,7 +359,7 @@ class OfferView( APIView ):
                     status=200,
                     data = {
                         "status" : "error",
-                        "error" : "Invalid publication Id"
+                        "error" : "ID de publicación inválido"
                     })
         
         offers = Offer.objects.all()
@@ -381,7 +381,7 @@ class DeliveryView( APIView ):
         if user is None or not user.is_authenticated:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You must be logged in to perform this action"
+                "error" : "Debes estar logueado para realizar ésta acción"
             })
 
         # Check if user is the owner of the publication
@@ -390,13 +390,13 @@ class DeliveryView( APIView ):
         except Publication.DoesNotExist:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "Invalid publication id"
+                "error" : "ID de publicación inválido"
             })
         
         if publication.user.id != user.id:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You are not the owner of this publication"
+                "error" : "No puedes modificar la entrega de una publicación que no es tuya"
             })
         
         # Check if publication has an offer
@@ -405,7 +405,7 @@ class DeliveryView( APIView ):
         except Offer.DoesNotExist:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "This publication has no offers"
+                "error" : "Esta publicación no tiene ofertas"
             })
         
         if not offer or len(offer) == 0:
@@ -418,7 +418,7 @@ class DeliveryView( APIView ):
         if publication.deliveryType is not None:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "This publication already has a delivery"
+                "error" : "Esta publicación ya tiene una entrega"
             })
         
         # Update publication info
@@ -450,7 +450,7 @@ class ConfirmationView( APIView ):
         if not user.is_authenticated:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You must be logged in to perform this action"
+                "error" : "Debes estar logueado para ejecutar ésta acción"
             })
         
         # Check if publication exists
@@ -459,7 +459,7 @@ class ConfirmationView( APIView ):
         except Publication.DoesNotExist:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "Invalid publication id"
+                "error" : "ID de publicación inválido"
             })
         
         # Check if user is the winner of the publication
@@ -468,26 +468,26 @@ class ConfirmationView( APIView ):
         except Offer.DoesNotExist:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "This publication has no offers"
+                "error" : "Esta publicación no tiene ofertas"
             })
         
         if len(offers) == 0:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "This publication has no offers"
+                "error" : "Esta publicación no tiene ofertas"
             })
         
         if user.id != offers[0].user.id:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "You are not the winner of this publication"
+                "error" : "No puedes confirmar una publicación que no es tuya"
             })
         
         # Check if publication has a delivery
         if publication.deliveryType is None:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "This publication has no delivery information"
+                "error" : "Esta publicación no tiene una entrega"
             })
         
         # Now mark publication as confirmed

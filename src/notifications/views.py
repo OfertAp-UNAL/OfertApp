@@ -12,7 +12,7 @@ class NotificationView( APIView ):
                 status=200,
                 data={
                     "status": "error",
-                    "error": "User is not authenticated"
+                    "error": "Debes iniciar sesión para realizar esta acción"
                 }
             )
 
@@ -33,7 +33,7 @@ class NotificationView( APIView ):
                 status=200,
                 data={
                     "status": "error",
-                    "error": "User is not authenticated"
+                    "error": "Debes iniciar sesión para realizar esta acción"
                 }
             )
 

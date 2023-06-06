@@ -23,7 +23,7 @@ class TransactionView( APIView ):
             status = 200,
             data = {
                 "status": "error",
-                "error": "User not authenticated"
+                "error": "Debes iniciar sesión para realizar esta acción"
             }
         )
 
@@ -37,7 +37,7 @@ class MemmbershipView( APIView ):
                 status = 200,
                 data = {
                     "status": "error",
-                    "error": "User not authenticated"
+                    "error": "Debes iniciar sesión para realizar esta acción"
                 }
             )
         
@@ -49,7 +49,7 @@ class MemmbershipView( APIView ):
                 status = 200,
                 data = {
                     "status": "error",
-                    "error": "Not enough balance"
+                    "error": "No tienes suficiente saldo para comprar la membresía"
                 }
             )
         

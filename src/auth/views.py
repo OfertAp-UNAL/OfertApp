@@ -35,7 +35,7 @@ class LoginView( APIView ):
             print(e)
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "Invalid credentials"
+                "error" : "Credenciales inválidas"
             })
         
 
@@ -45,7 +45,7 @@ class LoginView( APIView ):
             if user.blocked:
                 return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "Your account has been blocked"
+                    "error" : "Estás bloqueado, no puedes iniciar sesión"
                 })
             
             # Persistent user
@@ -66,12 +66,12 @@ class LoginView( APIView ):
 
                 return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "Please verify your account by checking your email"
+                    "error" : "Por favor verifica tu correo electrónico"
                 })
 
         return Response({
             "status" : "error",
-            "error" : "Invalid credentials"
+            "error" : "Credenciales inválidas"
         })
 
 class LogoutView( APIView ):
@@ -85,7 +85,7 @@ class LogoutView( APIView ):
         
         return Response(status = 200, data = {
             "status" : "error",
-            "error" : "You are not logged in"
+            "error" : "No estás logueado"
         })
     
 class RegisterView( APIView ):
@@ -122,13 +122,13 @@ class RegisterView( APIView ):
             if fileType != "IMAGE":
                 return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "Profile Picture must be an image"
+                    "error" : "El archivo debe ser una imagen"
                 })
             
             data["profilePicture"] = "https://cdn.filestackcontent.com/pLDF5BZTP6ASwiobbC8W"
-            # data["profilePicture"] = saveFile(
-            #     profileFile, "profile_pictures"
-            # )
+            data["profilePicture"] = saveFile(
+                profileFile, "profile_pictures"
+            )
 
         # Hash password
         data["password"] = make_password(data["password"])
@@ -141,7 +141,7 @@ class RegisterView( APIView ):
             if parser.parse( data["birthdate"] ) > datetime.today() - timedelta(days=18*365):
                 return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "You must be at least 18 years old"
+                    "error" : "Debes ser mayor de edad para registrarte"
                 })
             
         if serializer.is_valid():
@@ -150,7 +150,7 @@ class RegisterView( APIView ):
             if not accountService.checkAccount(data):
                 return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "Invalid identity"
+                    "error" : "La información de tu cuenta no coincide con la información de tu identificación"
                 })
             
             user = serializer.save()
@@ -175,7 +175,7 @@ class RegisterView( APIView ):
             
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "Invalid form body"
+                "error" : "Cuerpo de formulario inválido"
             })
         return Response(status = 200, data = {
             "status" : "error",
@@ -201,7 +201,7 @@ class UserInfoView( APIView ):
         
         return Response(status = 200, data = {
             "status" : "error",
-            "error" : "You aren't logged in"
+            "error" : "No estás logueado"
         })
     
     def patch(self, request):
@@ -252,7 +252,7 @@ class UserInfoView( APIView ):
                 
                 return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "Invalid form body"
+                    "error" : "Cuerpo de formulario inválido"
                 })
             
             return Response(status = 200, data = {
@@ -262,7 +262,7 @@ class UserInfoView( APIView ):
         
         return Response(status = 200, data = {
             "status" : "error",
-            "error" : "You aren't logged in"
+            "error" : "No estás logueado"
         })
 
 class VerifyView( APIView ):
@@ -270,7 +270,7 @@ class VerifyView( APIView ):
         if token is None or user64_id is None:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "Invalid request, include /token/user64_id/"
+                "error" : "Petición inválida, incluye /token/user64_id/"
             })
 
         try:
@@ -279,7 +279,7 @@ class VerifyView( APIView ):
         except User.DoesNotExist:
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "Invalid token"
+                "error" : "Token inválido"
             })
 
         if emailTokenGenerator.check_token(user, token):
@@ -290,12 +290,12 @@ class VerifyView( APIView ):
 
             return Response(status = 200, data = {
                 "status" : "success",
-                "message" : "Email verified"
+                "message" : "Email verificado"
             })
         
         return Response(status = 200, data = {
             "status" : "error",
-            "error" : "Invalid token"
+            "error" : "Token inválido"
         })
 
 class PasswordResetView( APIView ):
@@ -311,7 +311,7 @@ class PasswordResetView( APIView ):
             if email is None:
                 return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "Invalid request, include /email/"
+                    "error" : "Petición inválida, incluye /email/"
                 })
 
             try:
@@ -319,14 +319,14 @@ class PasswordResetView( APIView ):
             except User.DoesNotExist:
                 return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "Email doesn't exist"
+                    "error" : "Email no registrado"
                 })
 
             # Check if user is verified
             if not user.verified:
                 return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "Email isn't verified"
+                    "error" : "Por favor verifica tu correo electrónico antes de cambiar tu contraseña"
                 })
 
             # Send password reset email
@@ -334,7 +334,7 @@ class PasswordResetView( APIView ):
 
             return Response(status = 200, data = {
                 "status" : "success",
-                "message" : "Email sent"
+                "message" : "Email enviado"
             })
 
         elif token is not None and user64_id is not None and password is not None:
@@ -345,7 +345,7 @@ class PasswordResetView( APIView ):
             except User.DoesNotExist:
                 return Response(status = 200, data = {
                     "status" : "error",
-                    "error" : "Invalid token"
+                    "error" : "Token inválido"
                 })
             
             if resetPasswordTokenGenerator.check_token(user, token):
@@ -354,15 +354,15 @@ class PasswordResetView( APIView ):
 
                 return Response(status = 200, data = {
                     "status" : "success",
-                    "message" : "Password changed"
+                    "message" : "Contraseña cambiada"
                 })
 
             return Response(status = 200, data = {
                 "status" : "error",
-                "error" : "Invalid token"
+                "error" : "Token inválido"
             })
         
         return Response(status = 200, data = {
             "status" : "error",
-            "error" : "Invalid request, include /email/ or /token/user64_id/password/"
+            "error" : "Petición inválida, incluye /email/ o /token/user64_id/password/"
         })

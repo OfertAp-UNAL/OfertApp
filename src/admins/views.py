@@ -24,7 +24,7 @@ def checkPermissions(request):
             status=200,
             data = {
                 "status" : "error",
-                "error" : "User is not admin"
+                "error" : "El usuario no tiene permisos de administrador"
             }
         )
     return None
@@ -44,7 +44,7 @@ class PublicationView(APIView):
                 status=200,
                 data = {
                     "status" : "success",
-                    "data" : "Publication deleted"
+                    "data" : "Publicación eliminada"
                 }
             )
         except Exception:
@@ -52,7 +52,7 @@ class PublicationView(APIView):
                 status=200,
                 data = {
                     "status" : "error",
-                    "error" : "Publication not found"
+                    "error" : "Publicación no encontrada"
                 }
             )
 
@@ -71,7 +71,7 @@ class CommentView(APIView):
                 status=200,
                 data = {
                     "status" : "success",
-                    "data" : "Comment deleted"
+                    "data" : "Comentario eliminado"
                 }
             )
         except Exception:
@@ -79,7 +79,7 @@ class CommentView(APIView):
                 status=200,
                 data = {
                     "status" : "error",
-                    "error" : "Comment not found"
+                    "error" : "Comentario no encontrado"
                 }
             )
 
@@ -98,7 +98,7 @@ class CommentView(APIView):
                 status=200,
                 data = {
                     "status" : "success",
-                    "data" : "User deleted"
+                    "data" : "Usuario eliminado"
                 }
             )
         except Exception:
@@ -106,7 +106,7 @@ class CommentView(APIView):
                 status=200,
                 data = {
                     "status" : "error",
-                    "error" : "User not found"
+                    "error" : "Usuario no encontrado"
                 }
             )
 
@@ -155,7 +155,7 @@ class ReportView( APIView ):
                 status=200,
                 data = {
                     "status" : "error",
-                    "error" : "Report not found"
+                    "error" : "Reporte no encontrado"
                 }
             )
 
@@ -173,7 +173,7 @@ class ReportView( APIView ):
                     status=200,
                     data = {
                         "status" : "error",
-                        "error" : "User not found"
+                        "error" : "Usuario no encontrado"
                     }
                 )
         elif blockedState == 3:
@@ -187,7 +187,7 @@ class ReportView( APIView ):
                     status=200,
                     data = {
                         "status" : "error",
-                        "error" : "User not found"
+                        "error" : "Usuario no encontrado"
                     }
                 )
          
@@ -220,7 +220,7 @@ class ReportView( APIView ):
                     status=200,
                     data = {
                         "status" : "error",
-                        "error" : "User not found"
+                        "error" : "Usuario no encontrado"
                     }
                 )
         elif transactionState == 3:
@@ -247,7 +247,7 @@ class ReportView( APIView ):
                     status=200,
                     data = {
                         "status" : "error",
-                        "error" : "User not found"
+                        "error" : "Usuario no encontrado"
                     }
                 )
 
@@ -256,6 +256,6 @@ class ReportView( APIView ):
             status=200,
             data = {
                 "status" : "success",
-                "data" : "Report updated"
+                "data" : "Reporte actualizado"
             }
         )
