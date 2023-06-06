@@ -239,7 +239,7 @@ def rechargeBalance(
     # Create a Transaction
     transaction = Transaction.objects.create(
         type = Transaction.TransactionTypeChoices.ACCOUNT_RECHARGE,
-        description = "Account recharge",
+        description = "Recargaste tu cuenta!",
         amount = amount,
         prevBalance = account.balance,
         postBalance = account.balance + amount,
@@ -275,7 +275,7 @@ def withdrawBalance(
     # Create a Transaction
     transaction = Transaction.objects.create(
         type = Transaction.TransactionTypeChoices.ACCOUNT_WITHDRAWAL,
-        description = "Account withdrawal",
+        description = "Retiraste de tu cuenta!",
         amount = amount,
         prevBalance = account.balance,
         postBalance = account.balance - amount,
