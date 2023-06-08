@@ -49,7 +49,7 @@ class PublicationSerializer(serializers.ModelSerializer):
         fields = (
             'title', 'description', 'minOffer', 'endDate', 'available', 'reportable', 'category',
             'user', 'id', 'priority', 'user', 'comments', 'offers', 'supports', 'deliveryType', 'deliveryId',
-            'createdAt', 'confirmed'
+            'createdAt', 'confirmed', 'currentPrice'
             )
     
     user = UserSerializer()
@@ -57,19 +57,29 @@ class PublicationSerializer(serializers.ModelSerializer):
 
     # Nested serializers
     comments = serializers.SerializerMethodField(
-        'get_comments'
+        'getComments'
     )
     offers = serializers.SerializerMethodField(
-        'get_offers'
+        'getOffers'
+    )
+    currentPrice = serializers.SerializerMethodField(
+        'getCurrentPrice'
     )
 
     # Here the order doesn't care at all
     supports = PublicationSupportSerializer(many=True)
 
-    def get_comments(self, publication):
+    def getComments(self, publication):
         comments = publication.comments.all().order_by('-createdAt')
         return PublicationCommentSerializer(comments, context = self.context, many=True).data
 
-    def get_offers(self, publication):
+    def getOffers(self, publication):
         offers = publication.offers.all().order_by('-amount')
         return OfferSerializer(offers, many=True).data
+
+    def getCurrentPrice(self, publication):
+        offers = publication.offers.all().order_by('-amount')
+        if len(offers) > 0:
+            return offers[0].amount
+        else:
+            return publication.minOffer
