@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-import environ
 import os
 import decimal
 
@@ -21,26 +20,23 @@ import pymysql
 pymysql.install_as_MySQLdb()
 
 # Read env data
-env = environ.Env()
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-environ.Env.read_env( os.path.join(BASE_DIR, "./../.env") )
+env = os.environ
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("SECRET_KEY")
+SECRET_KEY = env.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env("DEBUG", default=False, cast=bool)
+DEBUG = bool(env.get("DEBUG", default=False))
 
 # Allow requests which doesn't end with /
 APPEND_SLASH = False
 
 # Get Backend's domain name:
-WEB_URL = env("WEB_URL")
+WEB_URL = env.get("WEB_URL")
 
 ALLOWED_HOSTS = [
     "*",
@@ -137,13 +133,13 @@ WSGI_APPLICATION = 'OfertApp.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': env("DB_NAME"),
-        'USER' : env("DB_USER"),
-        'PASSWORD' : env("DB_PASSWORD"),
-        'HOST' : env("DB_HOST"),
-        'PORT' : env("DB_PORT"),
+        'NAME': env.get("DB_NAME"),
+        'USER' : env.get("DB_USER"),
+        'PASSWORD' : env.get("DB_PASSWORD"),
+        'HOST' : env.get("DB_HOST"),
+        'PORT' : env.get("DB_PORT"),
         'TEST' : {
-            'NAME' : env("DB_NAME"),            
+            'NAME' : env.get("DB_NAME"),            
         }
     }
 }
@@ -184,10 +180,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Smtp config
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = env("EMAIL_HOST")
-EMAIL_PORT = env("EMAIL_PORT")
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_HOST = env.get("EMAIL_HOST")
+EMAIL_PORT = env.get("EMAIL_PORT")
+EMAIL_HOST_USER = env.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env.get("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
 
 # Tokens default expiration time
@@ -197,26 +193,26 @@ PASSWORD_RESET_TIMEOUT = 7200 # 2 Hours
 MUNICIPALITY_SERVICE_URL = "https://www.datos.gov.co/resource/xdk5-pm3f.json"
 
 # Get verification endpoint
-EMAIL_VERIFICATION_URL_ENDPOINT = env("EMAIL_VERIFICATION_URL_ENDPOINT")
+EMAIL_VERIFICATION_URL_ENDPOINT = env.get("EMAIL_VERIFICATION_URL_ENDPOINT")
 
 # Get password recovery endpoint
-EMAIL_PASSWORD_RESET_URL_ENDPOINT = env("EMAIL_PASSWORD_RESET_URL_ENDPOINT")
+EMAIL_PASSWORD_RESET_URL_ENDPOINT = env.get("EMAIL_PASSWORD_RESET_URL_ENDPOINT")
 
 # Currency translation data 
-MP_BASE_URL = env("MP_BASE_URL")
-MP_ACCESS_TOKEN = env("MP_ACCESS_TOKEN")
-MP_PUBLIC_KEY = env("MP_PUBLIC_KEY")
+MP_BASE_URL = env.get("MP_BASE_URL")
+MP_ACCESS_TOKEN = env.get("MP_ACCESS_TOKEN")
+MP_PUBLIC_KEY = env.get("MP_PUBLIC_KEY")
 
 # Membership costs
-MEMBERSHIP_COST = decimal.Decimal(env("MEMBERSHIP_COST"))
-MEMBERSHIP_TIME = decimal.Decimal(env("MEMBERSHIP_TIME")) # days
-MEMBERSHIP_PUBLICATIONS = env("MEMBERSHIP_PUBLICATIONS") # Number of boosteable publications
-FEE_PERCENT = decimal.Decimal(env("FEE_PERCENT")) # Percentage of publication cost
+MEMBERSHIP_COST = decimal.Decimal(env.get("MEMBERSHIP_COST"))
+MEMBERSHIP_TIME = decimal.Decimal(env.get("MEMBERSHIP_TIME")) # days
+MEMBERSHIP_PUBLICATIONS = env.get("MEMBERSHIP_PUBLICATIONS") # Number of boosteable publications
+FEE_PERCENT = decimal.Decimal(env.get("FEE_PERCENT")) # Percentage of publication cost
 
 # Scheduler
-ENABLE_SCHEDULERS = env("ENABLE_SCHEDULERS", default=False, cast=bool)
+ENABLE_SCHEDULERS = env.get("ENABLE_SCHEDULERS", default=False, cast=bool)
 
-FILESTACK_API_KEY = env("FILESTACK_API_KEY")
+FILESTACK_API_KEY = env.get("FILESTACK_API_KEY")
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -244,7 +240,7 @@ ALLOWED_FILE_SIZE = {
     "DOCUMENT" : 10 # MB
 }
 
-MINIMUM_OFFER_AMOUNT = decimal.Decimal(env("MINIMUM_OFFER_AMOUNT"))
+MINIMUM_OFFER_AMOUNT = decimal.Decimal(env.get("MINIMUM_OFFER_AMOUNT"))
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
